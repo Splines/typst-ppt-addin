@@ -24,6 +24,7 @@ const computeSizeFromSvg = (svg, scale = 1.0, fallbackWidth = 300) => {
 };
 
 let isWasmReady = false;
+let lastTypstSelection = null; // { slideId, shapeId, left, top }
 
 // --- INITIALIZATION ---
 Office.onReady(async (info) => {
@@ -87,6 +88,12 @@ async function handleAction() {
             allSlides.load("items");
             await context.sync();
 
+            // Load props on selected shapes
+            if (selection.items.length > 0) {
+                selection.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top"]));
+                await context.sync();
+            }
+
             const count = selection.items.length;
             debug("Selected shapes:", count);
 
@@ -94,18 +101,35 @@ async function handleAction() {
             let targetTop = null;
             let replacing = false;
 
-            if (count > 0) {
-                const selected = selection.items[0];
-                selected.load(["altTextDescription", "left", "top"]);
-                await context.sync();
+            // Try current selection first
+            let typstShape = selection.items.find(
+                (s) => s.altTextDescription && s.altTextDescription.startsWith("TYPST:")
+            );
 
-                if (selected.altTextDescription && selected.altTextDescription.startsWith("TYPST:")) {
-                    targetLeft = selected.left;
-                    targetTop = selected.top;
-                    selected.delete();
-                    replacing = true;
-                    await context.sync();
+            // If nothing is selected (because taskpane grabbed focus), fall back to last remembered Typst selection
+            if (!typstShape && lastTypstSelection) {
+                try {
+                    const slide = allSlides.items.find((sl) => sl.id === lastTypstSelection.slideId) || allSlides.items[0];
+                    if (slide) {
+                        slide.shapes.load("items");
+                        await context.sync();
+                        if (slide.shapes.items.length > 0) {
+                            slide.shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top"]));
+                            await context.sync();
+                            typstShape = slide.shapes.items.find((s) => s.id === lastTypstSelection.shapeId);
+                        }
+                    }
+                } catch (e) {
+                    debug("Fallback to last selection failed:", e);
                 }
+            }
+
+            if (typstShape) {
+                targetLeft = typstShape.left;
+                targetTop = typstShape.top;
+                typstShape.delete();
+                replacing = true;
+                await context.sync();
             }
 
             // Choose target slide: selected slide or first slide
@@ -188,8 +212,14 @@ async function handleAction() {
 async function onSelectionChange() {
     await PowerPoint.run(async (context) => {
         const shapes = context.presentation.getSelectedShapes();
-        shapes.load("items/altTextDescription");
+        shapes.load("items");
+        const slides = context.presentation.getSelectedSlides();
+        slides.load("items/id");
         await context.sync();
+        if (shapes.items.length > 0) {
+            shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top"]));
+            await context.sync();
+        }
         const count = shapes.items.length;
         debug("Selection changed, count:", count);
 
@@ -203,6 +233,13 @@ async function onSelectionChange() {
             try {
                 document.getElementById('typstInput').value = decodeSource(raw);
                 debug("Loaded Typst payload from selection");
+                const slideId = slides.items.length > 0 ? slides.items[0].id : null;
+                lastTypstSelection = {
+                    slideId,
+                    shapeId: match.id,
+                    left: match.left,
+                    top: match.top,
+                };
             } catch (err) {
                 console.error("Decode error:", err);
                 setStatus("Failed to decode Typst payload from selection.", true);
