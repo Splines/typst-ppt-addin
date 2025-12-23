@@ -24,7 +24,7 @@ const computeSizeFromSvg = (svg, scale = 1.0, fallbackWidth = 300) => {
 };
 
 let isWasmReady = false;
-let lastTypstSelection = null; // { slideId, shapeId, left, top }
+let lastTypstSelection = null; // { slideId, shapeId, left, top, width, height }
 
 // --- INITIALIZATION ---
 Office.onReady(async (info) => {
@@ -90,7 +90,7 @@ async function handleAction() {
 
             // Load props on selected shapes
             if (selection.items.length > 0) {
-                selection.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top"]));
+                selection.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top", "width", "height"]));
                 await context.sync();
             }
 
@@ -99,6 +99,8 @@ async function handleAction() {
 
             let targetLeft = null;
             let targetTop = null;
+            let targetWidth = null;
+            let targetHeight = null;
             let replacing = false;
 
             // Try current selection first
@@ -114,7 +116,7 @@ async function handleAction() {
                         slide.shapes.load("items");
                         await context.sync();
                         if (slide.shapes.items.length > 0) {
-                            slide.shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top"]));
+                            slide.shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top", "width", "height"]));
                             await context.sync();
                             typstShape = slide.shapes.items.find((s) => s.id === lastTypstSelection.shapeId);
                         }
@@ -127,6 +129,8 @@ async function handleAction() {
             if (typstShape) {
                 targetLeft = typstShape.left;
                 targetTop = typstShape.top;
+                targetWidth = typstShape.width;
+                targetHeight = typstShape.height;
                 typstShape.delete();
                 replacing = true;
                 await context.sync();
@@ -189,14 +193,16 @@ async function handleAction() {
                         shapeToTag.altTextDescription = payload;
                         shapeToTag.name = "Typst Equation";
                         const size = computeSizeFromSvg(svgOutput);
-                        shapeToTag.width = size.width;
-                        shapeToTag.height = size.height;
+                        const h = targetHeight ?? size.height;
+                        const aspect = size.height > 0 ? size.width / size.height : 1;
+                        shapeToTag.height = h;
+                        shapeToTag.width = h * aspect;
                         if (targetLeft !== null && targetTop !== null) {
                             shapeToTag.left = targetLeft;
                             shapeToTag.top = targetTop;
                         }
                         await ctx2.sync();
-                        debug("Inserted/updated shape tagged", { replacing, targetLeft, targetTop, size, shapeId: shapeToTag.id });
+                        debug("Inserted/updated shape tagged", { replacing, targetLeft, targetTop, size, shapeId: shapeToTag.id, targetWidth, targetHeight });
                         setStatus(replacing ? "Updated Typst SVG." : "Inserted Typst SVG.");
                     });
                 }
@@ -217,7 +223,7 @@ async function onSelectionChange() {
         slides.load("items/id");
         await context.sync();
         if (shapes.items.length > 0) {
-            shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top"]));
+            shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top", "width", "height"]));
             await context.sync();
         }
         const count = shapes.items.length;
@@ -239,6 +245,8 @@ async function onSelectionChange() {
                     shapeId: match.id,
                     left: match.left,
                     top: match.top,
+                    width: match.width,
+                    height: match.height,
                 };
             } catch (err) {
                 console.error("Decode error:", err);
