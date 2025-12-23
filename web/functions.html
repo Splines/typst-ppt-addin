@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <script>
+    Office.onReady(function () {
+      Office.actions.associate("showTaskpane", function () {
+        return Office.addin.showAsTaskpane();
+      });
+    });
+  </script>
+</body>
+</html>

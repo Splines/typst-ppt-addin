@@ -1,0 +1,16 @@
+{
+  "name": "typst-ppt-addin",
+  "version": "1.0.0",
+  "scripts": {
+    "build:engine": "cd engine && wasm-pack build --target web --out-dir ../web/pkg",
+    "dev": "node web/dev-server.js",
+    "start": "office-addin-debugging start web/manifest.xml desktop",
+    "stop": "office-addin-debugging stop web/manifest.xml"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "office-addin-debugging": "^6.0.6",
+    "office-addin-dev-settings": "^3.0.6",
+    "office-addin-manifest": "^2.1.2"
+  }
+}
