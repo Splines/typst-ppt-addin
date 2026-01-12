@@ -116,6 +116,7 @@ async function setupWasm() {
             debug("WASM initialized (backup to remote compiler)");
         }
         debug("WASM initialized");
+        updatePreview();
     } catch (err) {
         console.error("WASM Load Error:", err);
         if (!compilerConfig.compilerUrl) {
@@ -364,6 +365,8 @@ async function onSelectionChange() {
                         width: match.width,
                         height: match.height,
                     };
+                    // Trigger preview update immediately
+                    updatePreview();
                 } catch (err) {
                     console.error("Decode error:", err);
                     setStatus("Failed to decode Typst payload from selection.", true);
@@ -391,3 +394,66 @@ document.getElementById('typstInput').addEventListener('keydown', (e) => {
         handleAction();
     }
 });
+
+let debounceTimer;
+document.getElementById('typstInput').addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        updatePreview();
+    }, 300);
+});
+
+async function updatePreview() {
+    const code = document.getElementById('typstInput').value.trim();
+    const previewEl = document.getElementById('previewContent');
+    
+    if (!code) {
+        previewEl.innerHTML = "";
+        return;
+    }
+
+    // Don't show status for preview unless it's an error
+    let svgOutput;
+    
+    // Prefer WASM for preview simply for speed, even if remote is configured? 
+    // Actually, if remote is configured, we might not have WASM loaded cleanly or at all.
+    // But the setupWasm() is still called. If user has a remote compiler, maybe they need it for packages.
+    // Let's stick to the config: if remote is set, use it.
+    
+    try {
+        if (compilerConfig.compilerUrl) {
+           // For preview, silence the status updates to avoid flicker
+           // We'll reimplement a mini-compile without side effects on the status bar
+           // Or just use the existing one but handle the status differently.
+           // For now, let's just attempt a compile.
+           
+           // NOTE: compileRemote updates status. That might be annoying.
+           // Let's rely on WASM if available for preview because it's instant?
+           // No, consistency is better.
+           svgOutput = await compileRemote(code); 
+        } else {
+            if (isWasmReady) {
+                svgOutput = compile_typst(code);
+            }
+        }
+    } catch (e) {
+        // console.error(e);
+        // ignore preview errors or show small red text
+    }
+
+    if (svgOutput && !svgOutput.startsWith("Error:")) {
+        previewEl.innerHTML = svgOutput;
+        // Fix width/height for display if needed? 
+        // SVG usually scales to container width 100%
+        const svgElement = previewEl.querySelector('svg');
+        if (svgElement) {
+            svgElement.style.width = "100%";
+            svgElement.style.height = "auto";
+            svgElement.style.maxHeight = "150px";
+        }
+    } else if (svgOutput && svgOutput.startsWith("Error:")) {
+        previewEl.innerText = svgOutput;
+        previewEl.style.color = "red";
+    }
+}
+

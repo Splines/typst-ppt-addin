@@ -25,6 +25,12 @@
 </head>
 <body>
     <textarea id="typstInput" placeholder="Enter Typst code... e.g. $ a^2 + b^2 = c^2 $"></textarea>
+    
+    <div id="previewContainer" style="margin-top: 10px; border: 1px dashed #ccc; padding: 10px; min-height: 50px; background: white; text-align: center;">
+        <span style="color: #999; font-size: 11px;">Preview</span>
+        <div id="previewContent"></div>
+    </div>
+
     <button id="insertBtn" disabled>Loading WASM...</button>
     <div id="status" class="status"></div>
     <div class="footer">Selecting a Typst image on a slide will automatically load its source code here.</div>
