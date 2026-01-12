@@ -48,6 +48,27 @@ export function computeSizeFromSvg(svg, scale = 1.0, fallbackWidth = 300) {
 }
 
 /**
+ * Calculates the actual bounding box of SVG content including padding
+ * @param {SVGElement} svgElement - The SVG element to measure
+ * @returns {{x: number, y: number, width: number, height: number}|null} Bounding box or null
+ */
+function calculateActualBounds(svgElement) {
+    try {
+        const bbox = svgElement.getBBox();
+        const padding = Math.max(bbox.width, bbox.height) * 0.1;
+        
+        return {
+            x: bbox.x - padding,
+            y: bbox.y - padding,
+            width: bbox.width + 2 * padding,
+            height: bbox.height + 2 * padding
+        };
+    } catch (error) {
+        return null;
+    }
+}
+
+/**
  * Applies explicit width and height attributes to an SVG element
  * @param {string} svg - SVG content as string
  * @param {number|null} targetHeight - Desired height, or null to use natural size
@@ -58,8 +79,38 @@ export function applySizeToSvg(svg, targetHeight) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(svg, "image/svg+xml");
         const svgElement = doc.documentElement;
-        const viewBoxAttr = svgElement.getAttribute("viewBox");
         
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.visibility = 'hidden';
+        tempContainer.style.width = '0';
+        tempContainer.style.height = '0';
+        document.body.appendChild(tempContainer);
+        tempContainer.appendChild(svgElement);
+        
+        const actualBounds = calculateActualBounds(svgElement);
+        
+        document.body.removeChild(tempContainer);
+        
+        if (actualBounds && actualBounds.width > 0 && actualBounds.height > 0) {
+            svgElement.setAttribute("viewBox", 
+                `${actualBounds.x} ${actualBounds.y} ${actualBounds.width} ${actualBounds.height}`
+            );
+            
+            const aspectRatio = actualBounds.width / actualBounds.height;
+            const height = targetHeight || actualBounds.height;
+            const width = height * aspectRatio;
+            
+            svgElement.setAttribute("height", `${height}`);
+            svgElement.setAttribute("width", `${width}`);
+            
+            const serializer = new XMLSerializer();
+            const modifiedSvg = serializer.serializeToString(svgElement);
+            
+            return { svg: modifiedSvg, size: { width, height } };
+        }
+        
+        const viewBoxAttr = svgElement.getAttribute("viewBox");
         if (!viewBoxAttr) {
             return { svg, size: computeSizeFromSvg(svg) };
         }

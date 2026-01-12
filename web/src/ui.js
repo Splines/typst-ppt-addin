@@ -1,5 +1,6 @@
 import { compile } from './compiler.js';
 import { state } from './state.js';
+import { applySizeToSvg } from './utils.js';
 
 /**
  * Sets the status message in the UI
@@ -95,7 +96,8 @@ export async function updatePreview() {
         const svgOutput = await compile(fullCode);
         
         if (svgOutput && !svgOutput.startsWith("Error:")) {
-            previewElement.innerHTML = svgOutput;
+            const { svg: processedSvg } = applySizeToSvg(svgOutput, null);
+            previewElement.innerHTML = processedSvg;
             previewElement.style.color = "";
             
             const svgElement = previewElement.querySelector('svg');
