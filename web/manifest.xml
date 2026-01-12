@@ -37,8 +37,8 @@
           </GetStarted>
           <FunctionFile resid="Taskpane.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <CustomTab id="TabTypst">
-              <Group id="GrpTypst">
+            <OfficeTab id="TabInsert">
+              <Group id="GrpTypstInsert">
                 <Label resid="Group.Label" />
                 <Icon>
                   <bt:Image size="16" resid="Icon.16x16" />
@@ -62,8 +62,7 @@
                   </Action>
                 </Control>
               </Group>
-              <Label resid="Tab.Label"/>
-            </CustomTab>
+            </OfficeTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
@@ -80,7 +79,6 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with Typst!" />
-        <bt:String id="Tab.Label" DefaultValue="Typst" />
         <bt:String id="Group.Label" DefaultValue="Typst" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="Typst Editor" />
       </bt:ShortStrings>
