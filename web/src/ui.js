@@ -60,7 +60,7 @@ export function setTypstCode(code) {
 export function setButtonText(isUpdating) {
     const button = document.getElementById('insertBtn');
     if (button) {
-        button.innerText = isUpdating ? "Update" : "Insert";
+        button.innerText = isUpdating ? "Update (Ctrl+Enter)" : "Insert (Ctrl+Enter)";
     }
 }
 
