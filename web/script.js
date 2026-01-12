@@ -93,6 +93,9 @@ Office.onReady(async (info) => {
             Office.EventType.DocumentSelectionChanged, 
             onSelectionChange
         );
+
+        // Perform initial check in case user selected a shape before opening the pane
+        onSelectionChange();
     }
 });
 
@@ -341,31 +344,50 @@ async function onSelectionChange() {
         const count = shapes.items.length;
         debug("Selection changed, count:", count);
 
+        const btn = document.getElementById('insertBtn');
+        let isTypstShape = false;
+
         if (count >= 1) {
             const match = shapes.items.find((s) => s.altTextDescription && s.altTextDescription.startsWith("TYPST:"));
-            if (!match || !match.altTextDescription) {
+            if (match && match.altTextDescription) {
+                isTypstShape = true;
+                const raw = match.altTextDescription.split("TYPST:")[1];
+                try {
+                    document.getElementById('typstInput').value = decodeSource(raw);
+                    debug("Loaded Typst payload from selection");
+                    const slideId = slides.items.length > 0 ? slides.items[0].id : null;
+                    lastTypstSelection = {
+                        slideId,
+                        shapeId: match.id,
+                        left: match.left,
+                        top: match.top,
+                        width: match.width,
+                        height: match.height,
+                    };
+                } catch (err) {
+                    console.error("Decode error:", err);
+                    setStatus("Failed to decode Typst payload from selection.", true);
+                }
+            } else {
                 debug("No TYPST payload on selection");
-                return;
             }
-            const raw = match.altTextDescription.split("TYPST:")[1];
-            try {
-                document.getElementById('typstInput').value = decodeSource(raw);
-                debug("Loaded Typst payload from selection");
-                const slideId = slides.items.length > 0 ? slides.items[0].id : null;
-                lastTypstSelection = {
-                    slideId,
-                    shapeId: match.id,
-                    left: match.left,
-                    top: match.top,
-                    width: match.width,
-                    height: match.height,
-                };
-            } catch (err) {
-                console.error("Decode error:", err);
-                setStatus("Failed to decode Typst payload from selection.", true);
-            }
+        }
+        
+        if (!isTypstShape) {
+            lastTypstSelection = null;
+        }
+
+        if (btn) {
+            btn.innerText = isTypstShape ? "Update" : "Insert";
         }
     });
 }
 
 document.getElementById('insertBtn').onclick = handleAction;
+
+document.getElementById('typstInput').addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        handleAction();
+    }
+});
