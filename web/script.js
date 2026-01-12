@@ -23,7 +23,6 @@ const computeSizeFromSvg = (svg, scale = 1.0, fallbackWidth = 300) => {
     return { width: fallbackWidth, height: fallbackWidth * 0.6 };
 };
 const applyHeightToSvg = (svg, targetHeight) => {
-    if (!targetHeight) return { svg, size: computeSizeFromSvg(svg) };
     try {
         const parser = new DOMParser();
         const doc = parser.parseFromString(svg, "image/svg+xml");
@@ -37,7 +36,8 @@ const applyHeightToSvg = (svg, targetHeight) => {
             return { svg, size: computeSizeFromSvg(svg) };
         }
         const aspect = parts[2] / parts[3];
-        const h = targetHeight;
+        // If no target height specified, use the natural size from viewBox
+        const h = targetHeight || parts[3];
         const w = h * aspect;
         el.setAttribute("height", `${h}`);
         el.setAttribute("width", `${w}`);
@@ -79,6 +79,12 @@ async function loadCompilerConfig() {
         document.getElementById('insertBtn').innerText = "Insert / Update";
         document.getElementById('insertBtn').disabled = false;
         setStatus("Remote compiler ready");
+    }
+    
+    // Load persisted font size
+    const savedSize = localStorage.getItem('typstFontSize');
+    if (savedSize) {
+        document.getElementById('fontSize').value = savedSize;
     }
 }
 
@@ -166,18 +172,26 @@ async function compileRemote(source) {
 
 // --- CORE LOGIC: INSERT OR REPLACE ---
 async function handleAction() {
-    const code = document.getElementById('typstInput').value;
+    const rawCode = document.getElementById('typstInput').value;
+    const fontSize = document.getElementById('fontSize').value || 20;
+
+    // Persist font size
+    localStorage.setItem('typstFontSize', fontSize);
+
+    // Prepend font size setting to code
+    const fullCode = `#set text(size: ${fontSize}pt)\n${rawCode}`;
+
     debug("Handle action start");
     let svgOutput;
     if (compilerConfig.compilerUrl) {
-        svgOutput = await compileRemote(code);
+        svgOutput = await compileRemote(fullCode);
     } else {
         if (!isWasmReady) {
             setStatus("WASM not ready; cannot compile.", true);
             return;
         }
         try {
-            svgOutput = compile_typst(code);
+            svgOutput = compile_typst(fullCode);
         } catch (err) {
             console.error("Compile Error:", err);
             setStatus("Typst compile failed. See console for details.", true);
@@ -190,7 +204,9 @@ async function handleAction() {
         return;
     }
 
-    const payload = `TYPST:${encodeSource(code)}`;
+    // IMPORTANT: We now store ONLY the user's code in the payload. 
+    // The font size is stored separately in the shape's tags.
+    const payload = `TYPST:${encodeSource(rawCode)}`;
 
     try {
         await PowerPoint.run(async (context) => {
@@ -261,7 +277,10 @@ async function handleAction() {
             debug("Target slide chosen for insertion", targetSlideId);
 
             // Pre-size the SVG to minimize flicker on insert
-            const sized = applyHeightToSvg(svgOutput, targetHeight);
+            // NOTE: We pass null as targetHeight to applyHeightToSvg because we want the 
+            // SVG's natural size (computed from the font size) to dictate the shape size.
+            // If we enforced targetHeight = typstShape.height, increasing font size wouldn't grow the shape visually.
+            const sized = applyHeightToSvg(svgOutput, null);
             const svgToInsert = sized.svg;
             const fallbackSize = sized.size;
 
@@ -309,10 +328,21 @@ async function handleAction() {
 
                         shapeToTag.altTextDescription = payload;
                         shapeToTag.name = "Typst Equation";
-                        const h = targetHeight ?? fallbackSize.height;
-                        const aspect = fallbackSize.height > 0 ? fallbackSize.width / fallbackSize.height : 1;
-                        shapeToTag.height = h;
-                        shapeToTag.width = h * aspect;
+                        // Persist the font size as a tag for robust round-tripping
+                        shapeToTag.tags.add("TypstFontSize", fontSize.toString());
+                        
+                        // Use the natural size of the generated SVG to respect the Font Size setting.
+                        // We ignore the previous shape's height (targetHeight) so that changing 
+                        // settings like Font Size actually resizes the shape on the slide.
+                        const h = fallbackSize.height;
+                        const w = fallbackSize.width;
+                        
+                        if (h > 0 && w > 0) {
+                            shapeToTag.height = h;
+                            shapeToTag.width = w;
+                        }
+                        // Note: If SVG size parsing fails, we let PowerPoint use default sizing
+
                         if (targetLeft !== null && targetTop !== null) {
                             shapeToTag.left = targetLeft;
                             shapeToTag.top = targetTop;
@@ -339,7 +369,7 @@ async function onSelectionChange() {
         slides.load("items/id");
         await context.sync();
         if (shapes.items.length > 0) {
-            shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top", "width", "height"]));
+            shapes.items.forEach((s) => s.load(["id", "altTextDescription", "left", "top", "width", "height", "tags"]));
             await context.sync();
         }
         const count = shapes.items.length;
@@ -352,9 +382,29 @@ async function onSelectionChange() {
             const match = shapes.items.find((s) => s.altTextDescription && s.altTextDescription.startsWith("TYPST:"));
             if (match && match.altTextDescription) {
                 isTypstShape = true;
-                const raw = match.altTextDescription.split("TYPST:")[1];
+                const rawBase64 = match.altTextDescription.split("TYPST:")[1];
                 try {
-                    document.getElementById('typstInput').value = decodeSource(raw);
+                    let decoded = decodeSource(rawBase64);
+                    
+                    // 1. Try to read from Tags (New standard)
+                    let foundSize = null;
+                    try {
+                        // Accessing tag value requires loading and syncing
+                        const tag = match.tags.getItemOrNullObject("TypstFontSize");
+                        tag.load("value");
+                        await context.sync();
+                        
+                        if (!tag.isNullObject) {
+                            foundSize = tag.value;
+                        }
+                    } catch (e) {
+                         debug("Error reading tags", e);
+                    }
+
+                    // Always set the font size in UI - use found size or default to 20
+                    document.getElementById('fontSize').value = foundSize || '20';
+
+                    document.getElementById('typstInput').value = decoded;
                     debug("Loaded Typst payload from selection");
                     const slideId = slides.items.length > 0 ? slides.items[0].id : null;
                     lastTypstSelection = {
@@ -396,21 +446,38 @@ document.getElementById('typstInput').addEventListener('keydown', (e) => {
 });
 
 let debounceTimer;
-document.getElementById('typstInput').addEventListener('input', () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-        updatePreview();
-    }, 300);
-});
+const fIn = document.getElementById('typstInput');
+if(fIn) {
+    fIn.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updatePreview();
+        }, 300);
+    });
+}
+
+const sIn = document.getElementById('fontSize');
+if(sIn) {
+    sIn.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updatePreview();
+        }, 300);
+    });
+}
+
 
 async function updatePreview() {
-    const code = document.getElementById('typstInput').value.trim();
+    const rawCode = document.getElementById('typstInput').value.trim();
+    const fontSize = document.getElementById('fontSize').value || 20;
     const previewEl = document.getElementById('previewContent');
     
-    if (!code) {
+    if (!rawCode) {
         previewEl.innerHTML = "";
         return;
     }
+
+    const fullCode = `#set text(size: ${fontSize}pt)\n${rawCode}`;
 
     // Don't show status for preview unless it's an error
     let svgOutput;
@@ -430,10 +497,10 @@ async function updatePreview() {
            // NOTE: compileRemote updates status. That might be annoying.
            // Let's rely on WASM if available for preview because it's instant?
            // No, consistency is better.
-           svgOutput = await compileRemote(code); 
+           svgOutput = await compileRemote(fullCode); 
         } else {
             if (isWasmReady) {
-                svgOutput = compile_typst(code);
+                svgOutput = compile_typst(fullCode);
             }
         }
     } catch (e) {
