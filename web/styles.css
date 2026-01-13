@@ -50,6 +50,7 @@ body {
     cursor: pointer;
     font-size: 13px;
     color: var(--text-primary);
+    /* eslint-disable-next-line css/use-baseline */
     user-select: none;
 }
 
