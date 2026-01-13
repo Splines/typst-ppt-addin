@@ -3,12 +3,12 @@
  */
 
 export const state = {
-    isWasmReady: false,
-    lastTypstSelection: null,
-    compilerConfig: {
-        url: null,
-        auth: null
-    }
+  isWasmReady: false,
+  lastTypstSelection: null,
+  compilerConfig: {
+    url: null,
+    auth: null,
+  },
 };
 
 /**
@@ -16,7 +16,7 @@ export const state = {
  * @param {boolean} ready - Whether WASM is ready
  */
 export function setWasmReady(ready) {
-    state.isWasmReady = ready;
+  state.isWasmReady = ready;
 }
 
 /**
@@ -24,7 +24,7 @@ export function setWasmReady(ready) {
  * @param {Object|null} selection - Selection info with slideId, shapeId, left, top, width, height
  */
 export function setLastTypstSelection(selection) {
-    state.lastTypstSelection = selection;
+  state.lastTypstSelection = selection;
 }
 
 /**
@@ -33,8 +33,8 @@ export function setLastTypstSelection(selection) {
  * @param {string|null} auth - Authentication token
  */
 export function setCompilerConfig(url, auth) {
-    state.compilerConfig.url = url;
-    state.compilerConfig.auth = auth;
+  state.compilerConfig.url = url;
+  state.compilerConfig.auth = auth;
 }
 
 /**
@@ -43,7 +43,7 @@ export function setCompilerConfig(url, auth) {
  * @returns {string|null} Stored value or null
  */
 export function getStoredValue(key) {
-    return localStorage.getItem(key);
+  return localStorage.getItem(key);
 }
 
 /**
@@ -52,5 +52,5 @@ export function getStoredValue(key) {
  * @param {string} value - Value to store
  */
 export function storeValue(key, value) {
-    localStorage.setItem(key, value);
+  localStorage.setItem(key, value);
 }

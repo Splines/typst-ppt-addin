@@ -4,6 +4,7 @@ body {
     font-family: sans-serif;
     background: #f4f4f4;
     min-width: 320px;
+    /* eslint-disable-next-line css/use-baseline */
     zoom: 115%;
 }
 
@@ -12,7 +13,7 @@ body {
     align-items: center;
     margin-bottom: 8px;
     font-size: 13px;
-    color: #444;
+    color: #444;     
 }
 
 .controls label {
@@ -36,6 +37,7 @@ textarea {
     padding: 8px;
     font-family: 'Courier New', monospace;
     font-size: 14px;
+    /* eslint-disable-next-line css/use-baseline */
     resize: vertical;
 }
 

@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
+
+  <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="data:image/x-icon;,">
-    <link rel="stylesheet" href="styles.css">
+    <link href="data:image/x-icon;," rel="icon">
+    <link href="styles.css" rel="stylesheet">
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-</head>
-<body>
+  </head>
+
+  <body>
     <div class="controls">
-        <label for="fontSize">Font Size (pt):</label>
-        <input type="number" id="fontSize" value="20" min="1" step="1.0" />
+      <label for="fontSize">Font Size (pt):</label>
+      <input id="fontSize" type="number" min="1" step="1.0" value="20">
     </div>
     <textarea id="typstInput" placeholder="Enter Typst code... e.g. $ a^2 + b^2 = c^2 $"></textarea>
-    
+
     <div id="previewContainer">
-        <span style="color: #999; font-size: 11px;">Preview</span>
-        <div id="previewContent"></div>
+      <span style="color: #999; font-size: 11px;">Preview</span>
+      <div id="previewContent"></div>
     </div>
 
     <button id="insertBtn" disabled>Loading WASM...</button>
@@ -23,5 +25,6 @@
     <div class="footer">Selecting a Typst image on a slide will automatically load its source code here.</div>
 
     <script type="module" src="src/main.js"></script>
-</body>
+  </body>
+
 </html>
