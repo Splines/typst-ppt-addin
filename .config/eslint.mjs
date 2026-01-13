@@ -70,7 +70,7 @@ export default defineConfig([
                 ifAttrsMoreThan: 5,
             }],
             "@html-eslint/element-newline": "error",
-            "@html-eslint/id-naming-convention": ["error", "kebab-case"],
+            "@html-eslint/id-naming-convention": ["error", "camelCase"],
             "@html-eslint/indent": ["error", 2],
             "@html-eslint/sort-attrs": "error",
             "@html-eslint/no-extra-spacing-attrs": ["error", {
