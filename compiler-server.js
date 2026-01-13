@@ -49,7 +49,7 @@ function runTypstCompile(source, format, cb) {
     stdout += t;
     if (VERBOSE) console.log(`[compiler stdout] ${t.trimEnd()}`);
   });
-  child.stderr.on("data", (d) => (stderr += d.toString()));
+  child.stderr.on("data", d => (stderr += d.toString()));
 
   child.on("error", (err) => {
     cleanup();

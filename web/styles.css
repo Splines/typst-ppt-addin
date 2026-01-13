@@ -1,0 +1,88 @@
+body {
+    margin: 0;
+    padding: 15px;
+    font-family: sans-serif;
+    background: #f4f4f4;
+    min-width: 320px;
+    /* eslint-disable-next-line css/use-baseline */
+    zoom: 115%;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #444;     
+}
+
+.controls label {
+    margin-right: 8px;
+    font-weight: 600;
+}
+
+.controls input {
+    width: 60px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+textarea {
+    width: 100%;
+    height: 180px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    /* eslint-disable-next-line css/use-baseline */
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #005a9e;
+}
+
+button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #666;
+}
+
+.status {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #444;
+}
+
+.status.error {
+    color: #b00020;
+}
+
+#previewCotnainer {
+    margin-top: 10px;
+    border: 1px dashed #ccc;
+    padding: 10px;
+    min-height: 50px;
+    background: white;
+    text-align: center;
+}

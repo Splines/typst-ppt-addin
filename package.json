@@ -1,6 +1,7 @@
 {
   "name": "typst-ppt-addin",
   "version": "1.0.0",
+  "packageManager": "npm@11.6.2",
   "scripts": {
     "build:engine": "cd engine && wasm-pack build --target web --out-dir ../web/pkg",
     "dev": "node web/dev-server.js",
@@ -10,8 +11,14 @@
   },
   "devDependencies": {
     "http-server": "^14.1.1",
-    "office-addin-debugging": "^6.0.6",
-    "office-addin-dev-settings": "^3.0.6",
-    "office-addin-manifest": "^2.1.2"
+    "office-addin-debugging": "^6.0.4",
+    "office-addin-dev-settings": "^3.0.4",
+    "office-addin-manifest": "^2.1.2",
+    "@eslint/css": "^0.14.1",
+    "@html-eslint/eslint-plugin": "^0.52.1",
+    "@html-eslint/parser": "^0.52.0",
+    "@stylistic/eslint-plugin": "^5.7.0",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0"
   }
 }

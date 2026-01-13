@@ -75,7 +75,7 @@ const server = https.createServer(loadTls(), (req, res) => {
     filePath = path.join(ROOT, "index.html");
   }
 
-   // Serve an empty favicon to avoid 404 noise.
+  // Serve an empty favicon to avoid 404 noise.
   if (urlPath === "/favicon.ico") {
     res.writeHead(200, { "Content-Type": "image/x-icon" });
     res.end();

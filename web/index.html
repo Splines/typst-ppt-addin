@@ -1,34 +1,31 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+
+  <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="data:image/x-icon;,">
+    <title>Typst for PowerPoint</title>
+    <link href="data:image/x-icon;," rel="icon">
+    <link href="styles.css" rel="stylesheet">
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    <style>
-        body { margin: 0; padding: 15px; font-family: sans-serif; background: #f4f4f4; min-width: 320px; }
-        textarea { 
-            width: 100%; height: 180px; box-sizing: border-box;
-            border: 1px solid #ccc; border-radius: 4px; padding: 8px;
-            font-family: 'Courier New', monospace; font-size: 14px;
-        }
-        button { 
-            width: 100%; margin-top: 10px; padding: 12px;
-            background: #0078d4; color: white; border: none; 
-            border-radius: 2px; cursor: pointer; font-weight: bold;
-        }
-        button:hover { background: #005a9e; }
-        button:disabled { background: #aaa; cursor: not-allowed; }
-        .footer { margin-top: 20px; font-size: 11px; color: #666; }
-        .status { margin-top: 10px; font-size: 12px; color: #444; }
-        .status.error { color: #b00020; }
-    </style>
-</head>
-<body>
+  </head>
+
+  <body>
+    <div class="controls">
+      <label for="fontSize">Font Size (pt):</label>
+      <input id="fontSize" type="number" min="1" step="1.0" value="20">
+    </div>
     <textarea id="typstInput" placeholder="Enter Typst code... e.g. $ a^2 + b^2 = c^2 $"></textarea>
+
+    <div id="previewContainer">
+      <span style="color: #999; font-size: 11px;">Preview</span>
+      <div id="previewContent"></div>
+    </div>
+
     <button id="insertBtn" disabled>Loading WASM...</button>
     <div id="status" class="status"></div>
     <div class="footer">Selecting a Typst image on a slide will automatically load its source code here.</div>
 
-    <script type="module" src="script.js"></script>
-</body>
+    <script type="module" src="src/main.js"></script>
+  </body>
+
 </html>

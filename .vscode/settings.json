@@ -1,0 +1,73 @@
+{
+    "editor.formatOnSave": false, // autosave configured via options below
+    //////////////////////////////////////
+    // ESLint: JS, HTML & ERB
+    //////////////////////////////////////
+    // https://eslint.style/guide/faq#how-to-auto-format-on-save
+    // https://github.com/microsoft/vscode-eslint#settings-options
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.format.enable": true,
+    "eslint.options": {
+        "overrideConfigFile": ".config/eslint.mjs"
+    },
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+        "html",
+        "css",
+    ],
+    "[javascript,html,css]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.indentSize": 2,
+        "editor.tabSize": 2,
+    },
+    // Disable VSCode-native JS validation since our JS files might include
+    // ERB syntax, that would otherwise be flagged as invalid
+    "javascript.validate.enable": false,
+    //////////////////////////////////////
+    // Files
+    //////////////////////////////////////
+    "files.exclude": {
+        "node_modules/": true,
+    },
+    //////////////////////////////////////
+    // Editor
+    //////////////////////////////////////
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 100, // toggle via Alt + Z shortcut
+    "editor.mouseWheelZoom": true,
+    "editor.rulers": [
+        {
+            "column": 80, // soft limit
+            "color": "#e5e5e5"
+        },
+        {
+            "column": 100, // hard limit
+            "color": "#c9c9c9"
+        }
+    ],
+    //////////////////////////////////////
+    // Git
+    //////////////////////////////////////
+    "git.inputValidation": true,
+    "git.inputValidationSubjectLength": 50,
+    "git.inputValidationLength": 72,
+    //////////////////////////////////////
+    // Spell Checker
+    //////////////////////////////////////
+    "cSpell.enabled": true,
+    "cSpell.diagnosticLevel": "Hint",
+    "cSpell.maxNumberOfProblems": 10000,
+    "cSpell.ignorePaths": [
+        "node_modules",
+        ".git"
+    ],
+    "cSpell.language": "en",
+    "cSpell.words": [
+        "powerpoint",
+        "typst",
+    ],
+}
