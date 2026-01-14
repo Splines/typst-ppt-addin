@@ -1,3 +1,6 @@
+> [!Important]
+> The Readme is currently outdated while the first PoC is being improved on to then ship the PowerPoint Add-in to the Marketplace. Expect a first release mid-February.
+
 # PoC: Typst PowerPoint Add-in
 
 Note: this project is merely a proof of concept and by no means production-ready. It was built (50% vibe-coded) on two evenings for fun and learning.
