@@ -14,4 +14,7 @@ export default defineConfig({
       cert: fs.readFileSync("web/certs/localhost.crt"),
     },
   },
+  optimizeDeps: {
+    exclude: ["@myriaddreamin/typst-ts-web-compiler"],
+  },
 });
