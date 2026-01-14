@@ -1,5 +1,6 @@
 import { compile } from "./compiler.js";
 import { applySizeToSvg } from "./utils.js";
+import { storeValue } from "./state.js";
 
 /**
  * Sets the status message in the UI
@@ -151,31 +152,34 @@ function applyFillToSvgElement(svgElement, fillColor) {
   });
 }
 
-let debounceTimer;
-
 /**
- * Sets up debounced preview updates on input changes
+ * Sets up event listeners for preview updates
  */
 export function setupPreviewListeners() {
   const typstInput = document.getElementById("typstInput");
   const fontSizeInput = document.getElementById("fontSize");
   const fillColorInput = document.getElementById("fillColor");
 
-  const debouncedUpdate = () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => updatePreview(), 300);
-  };
-
   if (typstInput) {
-    typstInput.addEventListener("input", debouncedUpdate);
+    typstInput.addEventListener("input", () => {
+      updatePreview();
+    });
   }
 
   if (fontSizeInput) {
-    fontSizeInput.addEventListener("input", debouncedUpdate);
+    fontSizeInput.addEventListener("input", () => {
+      const fontSize = getFontSize();
+      storeValue("typstFontSize", fontSize);
+      updatePreview();
+    });
   }
 
   if (fillColorInput) {
-    fillColorInput.addEventListener("input", debouncedUpdate);
+    fillColorInput.addEventListener("input", () => {
+      const fillColor = getFillColor();
+      storeValue("typstFillColor", fillColor);
+      updatePreview();
+    });
   }
 }
 
