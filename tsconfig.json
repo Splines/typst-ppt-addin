@@ -21,8 +21,8 @@
         "checkJs": true,
     },
     "include": [
-        "app/frontend/**/*.d.ts",
-        "app/frontend/**/*.ts",
-        "app/frontend/**/*.js",
+        "web/src/**/*.d.ts",
+        "web/src/**/*.ts",
+        "web/src/**/*.js",
     ],
 }

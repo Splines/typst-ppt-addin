@@ -2,9 +2,9 @@ import type * as typstWeb from "@myriaddreamin/typst.ts";
 import { createTypstCompiler, createTypstRenderer } from "@myriaddreamin/typst.ts";
 import { disableDefaultFontAssets, loadFonts } from "@myriaddreamin/typst.ts/dist/esm/options.init.mjs";
 
-// @ts-ignore
+// @ts-expect-error WASM module import
 import typstCompilerWasm from "@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url";
-// @ts-ignore
+// @ts-expect-error WASM module import
 import typstRendererWasm from "@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm?url";
 
 let compiler: typstWeb.TypstCompiler;
@@ -18,6 +18,7 @@ let renderer: typstWeb.TypstRenderer;
 export async function initCompiler() {
   compiler = createTypstCompiler();
   await compiler.init({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     getModule: () => typstCompilerWasm,
     beforeBuild: [
       disableDefaultFontAssets(),
@@ -37,6 +38,7 @@ export async function initCompiler() {
 export async function initRenderer() {
   renderer = createTypstRenderer();
   await renderer.init({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     getModule: () => typstRendererWasm,
   });
   console.log("Typst renderer initialized");
@@ -44,11 +46,11 @@ export async function initRenderer() {
 
 /**
  * Builds the complete Typst code with page setup and font size
- * @param {string} rawCode - The user's Typst code
- * @param {string} fontSize - Font size in points
- * @returns {string} Complete Typst code ready for compilation
+ * @param rawCode - The user's Typst code
+ * @param fontSize - Font size in points
+ * @returns Complete Typst code ready for compilation
  */
-export function buildRawTypstString(rawCode, fontSize) {
+export function buildRawTypstString(rawCode: string, fontSize: string): string {
   return "#set page(margin: 3pt, background: none, width: auto, fill: none, height: auto)"
     + `\n#set text(size: ${fontSize}pt)\n${rawCode}`;
 }
@@ -56,7 +58,7 @@ export function buildRawTypstString(rawCode, fontSize) {
 /**
  * Compiles the given Typst source to SVG.
  */
-export async function typst(source, fontSize) {
+export async function typst(source: string, fontSize: string): Promise<string> {
   const mainFilePath = "/main.typ";
   const typstCode = buildRawTypstString(source, fontSize);
   compiler.addSource(mainFilePath, typstCode);
