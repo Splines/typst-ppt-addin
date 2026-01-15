@@ -1,7 +1,7 @@
 import { getStoredValue } from "./state.js";
 import { setFontSize, setFillColor, setupPreviewListeners, initializeDarkMode, setupDarkModeToggle } from "./ui.js";
 import { insertOrUpdateFormula, handleSelectionChange } from "./powerpoint.js";
-import { initCompiler } from "./compiler.js";
+import { initCompiler, initRenderer } from "./compiler.js";
 
 /**
  * Initializes the UI state.
@@ -49,6 +49,7 @@ Office.onReady(async (info) => {
   }
 
   await initCompiler();
+  await initRenderer();
 
   initializeDarkMode();
   setupDarkModeToggle();
