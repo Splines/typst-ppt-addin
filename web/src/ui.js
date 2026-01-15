@@ -1,5 +1,5 @@
 import { compile } from "./compiler.js";
-import { applySizeToSvg } from "./utils.js";
+import { applySizeToSvg, buildTypstCode } from "./utils.js";
 import { storeValue } from "./state.js";
 
 /**
@@ -109,7 +109,7 @@ export async function updatePreview() {
     return;
   }
 
-  const fullCode = `#set page(width: auto, height: auto, margin: 0pt)\n#set text(size: ${fontSize}pt)\n${rawCode}`;
+  const fullCode = buildTypstCode(rawCode, fontSize);
 
   try {
     const svgOutput = await compile(fullCode);

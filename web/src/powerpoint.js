@@ -1,4 +1,4 @@
-import { encodeSource, decodeSource, applySizeToSvg, applyFillColorToSvg, debug } from "./utils.js";
+import { encodeSource, decodeSource, applySizeToSvg, applyFillColorToSvg, debug, buildTypstCode } from "./utils.js";
 import { state, setLastTypstSelection, storeValue } from "./state.js";
 import { compile } from "./compiler.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode, setTypstCode, setFontSize, setFillColor, setButtonText, updatePreview } from "./ui.js";
@@ -112,7 +112,7 @@ export async function insertOrUpdateFormula() {
   storeValue("typstFontSize", fontSize);
   storeValue("typstFillColor", fillColor);
 
-  const fullCode = `#set page(width: auto, height: auto, margin: 0pt)\n#set text(size: ${fontSize}pt)\n${rawCode}`;
+  const fullCode = buildTypstCode(rawCode, fontSize);
 
   debug("Handle action start");
   const svgOutput = await compile(fullCode);

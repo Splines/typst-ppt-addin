@@ -27,6 +27,16 @@ export function debug(...args) {
 }
 
 /**
+ * Builds the complete Typst code with page setup and font size
+ * @param {string} rawCode - The user's Typst code
+ * @param {string} fontSize - Font size in points
+ * @returns {string} Complete Typst code ready for compilation
+ */
+export function buildTypstCode(rawCode, fontSize) {
+  return `#set page(width: auto, height: auto, margin: 0pt)\n#set text(size: ${fontSize}pt)\n${rawCode}`;
+}
+
+/**
  * Computes the size of an SVG from its viewBox attribute
  * @param {string} svg - SVG content as string
  * @param {number} scale - Scale factor to apply
