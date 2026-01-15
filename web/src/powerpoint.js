@@ -249,6 +249,29 @@ async function readFillColorTag(shape, context) {
 }
 
 /**
+ * Extracts the actual fill color from a shape's fill property.
+ *
+ * There is an Office API bug where the fill color is always black if the user
+ * uses any "Theme Color" as shape fill:
+ * https://github.com/OfficeDev/office-js/issues/6443
+ *
+ * @param {Object} shape - PowerPoint shape object
+ * @param {Object} context - PowerPoint context
+ * @returns {Promise<string|null>} The detected fill color or null
+ */
+async function detectFillColor(shape, context) {
+  try {
+    shape.fill.load(["foregroundColor"]);
+    await context.sync();
+    const color = shape.fill.foregroundColor;
+    return color;
+  } catch (error) {
+    debug("Could not extract fill color from shape fill property: ", error);
+    return null;
+  }
+}
+
+/**
  * Handles selection change events in PowerPoint
  */
 export async function handleSelectionChange() {
@@ -286,7 +309,20 @@ export async function handleSelectionChange() {
           const storedFillColor = await readFillColorTag(typstShape, context);
 
           setFontSize(storedFontSize || "20");
-          setFillColor((storedFillColor === "disabled" || !storedFillColor) ? null : storedFillColor);
+
+          const actualColor = await detectFillColor(typstShape, context);
+
+          let fillColorToSet;
+          if (actualColor) {
+            fillColorToSet = actualColor;
+            debug("Using detected color from shape:", actualColor);
+          } else if (storedFillColor === "disabled" || !storedFillColor) {
+            fillColorToSet = null;
+          } else {
+            fillColorToSet = storedFillColor;
+          }
+
+          setFillColor(fillColorToSet);
           setTypstCode(decodedCode);
 
           debug("Loaded Typst payload from selection");
