@@ -3,21 +3,8 @@
  */
 
 export const state = {
-  isWasmReady: false,
   lastTypstSelection: null,
-  compilerConfig: {
-    url: null,
-    auth: null,
-  },
 };
-
-/**
- * Updates the WASM ready state
- * @param {boolean} ready - Whether WASM is ready
- */
-export function setWasmReady(ready) {
-  state.isWasmReady = ready;
-}
 
 /**
  * Updates the last selected Typst shape information
@@ -25,16 +12,6 @@ export function setWasmReady(ready) {
  */
 export function setLastTypstSelection(selection) {
   state.lastTypstSelection = selection;
-}
-
-/**
- * Updates the compiler configuration
- * @param {string|null} url - Compiler service URL
- * @param {string|null} auth - Authentication token
- */
-export function setCompilerConfig(url, auth) {
-  state.compilerConfig.url = url;
-  state.compilerConfig.auth = auth;
 }
 
 /**

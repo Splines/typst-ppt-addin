@@ -1,23 +1,12 @@
-import init, { compile_typst, init_fonts } from "../pkg/typst_ppt_engine.js";
-import { setCompilerConfig, getStoredValue } from "./state.js";
-import { loadCompilerConfig, setupWasm, setWasmFunctions } from "./compiler.js";
-import { setStatus, setButtonEnabled, setFontSize, setFillColor, setupPreviewListeners, updatePreview, initializeDarkMode, setupDarkModeToggle } from "./ui.js";
+import { getStoredValue } from "./state.js";
+import { setFontSize, setFillColor, setupPreviewListeners, initializeDarkMode, setupDarkModeToggle } from "./ui.js";
 import { insertOrUpdateFormula, handleSelectionChange } from "./powerpoint.js";
-import { debug } from "./utils.js";
+import { initCompiler } from "./compiler.js";
 
 /**
- * Initializes the compiler configuration and UI state
+ * Initializes the UI state.
  */
-async function initializeConfig() {
-  const config = await loadCompilerConfig();
-  setCompilerConfig(config.url, config.auth);
-
-  if (config.url) {
-    debug("Remote compiler configured", config.url);
-    setButtonEnabled(true);
-    setStatus("Remote compiler ready");
-  }
-
+async function initialeUiState() {
   const savedFontSize = getStoredValue("typstFontSize");
   if (savedFontSize) {
     setFontSize(savedFontSize);
@@ -26,22 +15,6 @@ async function initializeConfig() {
   const savedFillColor = getStoredValue("typstFillColor");
   if (savedFillColor) {
     setFillColor(savedFillColor);
-  }
-}
-
-/**
- * Initializes the WASM compiler module
- */
-async function initializeWasm() {
-  setWasmFunctions(init, compile_typst, init_fonts);
-  const success = await setupWasm();
-
-  if (success) {
-    setButtonEnabled(true);
-    setStatus("WASM ready");
-    updatePreview();
-  } else {
-    setStatus("Failed to load WASM. See console for details.", true);
   }
 }
 
@@ -75,11 +48,12 @@ Office.onReady(async (info) => {
     return;
   }
 
+  await initCompiler();
+
   initializeDarkMode();
   setupDarkModeToggle();
 
-  await initializeConfig();
-  await initializeWasm();
+  await initialeUiState();
   setupEventListeners();
 
   Office.context.document.addHandlerAsync(
