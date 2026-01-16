@@ -1,12 +1,12 @@
 import { getStoredValue } from "./state.js";
 import { setFontSize, setFillColor, setupPreviewListeners, initializeDarkMode, setupDarkModeToggle } from "./ui.js";
 import { insertOrUpdateFormula, handleSelectionChange } from "./powerpoint.js";
-import { initCompiler, initRenderer } from "./typst.js";
+import { initTypst } from "./typst.js";
 
 /**
  * Initializes the UI state.
  */
-async function initialeUiState() {
+function initializeUIState() {
   const savedFontSize = getStoredValue("typstFontSize");
   if (savedFontSize) {
     setFontSize(savedFontSize);
@@ -32,7 +32,7 @@ function setupEventListeners() {
     typstInput.addEventListener("keydown", (event) => {
       if (event.ctrlKey && event.key === "Enter") {
         event.preventDefault();
-        insertOrUpdateFormula();
+        void insertOrUpdateFormula();
       }
     });
   }
@@ -43,18 +43,17 @@ function setupEventListeners() {
 /**
  * Main initialization function for Office Add-in
  */
-Office.onReady(async (info) => {
+await Office.onReady(async (info) => {
   if (info.host !== Office.HostType.PowerPoint) {
     return;
   }
 
-  await initCompiler();
-  await initRenderer();
+  await initTypst();
 
   initializeDarkMode();
   setupDarkModeToggle();
 
-  await initialeUiState();
+  initializeUIState();
   setupEventListeners();
 
   Office.context.document.addHandlerAsync(
@@ -62,5 +61,5 @@ Office.onReady(async (info) => {
     handleSelectionChange,
   );
 
-  handleSelectionChange();
+  await handleSelectionChange();
 });

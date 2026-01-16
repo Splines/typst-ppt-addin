@@ -4,14 +4,13 @@ import html from "@html-eslint/eslint-plugin";
 import htmlParser, { TEMPLATE_ENGINE_SYNTAX } from "@html-eslint/parser";
 import stylistic from "@stylistic/eslint-plugin";
 import globals from "globals";
-import { defineConfig } from "eslint/config";
+import tseslint from "typescript-eslint";
 
 const customGlobals = {
   PowerPoint: "readonly",
-  Office: "readonly",
 };
 
-export default defineConfig([
+export default tseslint.config(
     {
         // Globally ignore the following paths
         ignores: [
@@ -21,12 +20,14 @@ export default defineConfig([
         ],
     },
     {
-        files: ["**/*.js"],
+        files: ["**/*.ts", "**/*.js"],
         plugins: {
             "@stylistic": stylistic,
         },
         extends: [
             eslint.configs.recommended,
+            tseslint.configs.recommendedTypeChecked,
+            tseslint.configs.strictTypeChecked,
         ],
         rules: {
             ...stylistic.configs.customize({
@@ -44,9 +45,20 @@ export default defineConfig([
             globals: {
                 ...customGlobals,
                 ...globals.browser,
-                ...globals.node,
+            },
+            parserOptions: {
+                // https://typescript-eslint.io/blog/project-service
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
             },
         },
+    },
+    {
+        // Disable type-checked linting
+        // https://typescript-eslint.io/troubleshooting/typed-linting/#how-do-i-disable-type-checked-linting-for-a-file
+        // https://typescript-eslint.io/troubleshooting/typed-linting/#i-get-errors-telling-me--was-not-found-by-the-project-service-consider-either-including-it-in-the-tsconfigjson-or-including-it-in-allowdefaultproject
+        files: ["**/*.js", "**/*.mjs", "**/*.mts"],
+        extends: [tseslint.configs.disableTypeChecked],
     },
     {
         files: ["**/*.html"],
@@ -94,4 +106,4 @@ export default defineConfig([
         language: "css/css",
         extends: [css.configs.recommended],
     },
-]);
+);

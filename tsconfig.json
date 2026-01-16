@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "es2022",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "moduleResolution": "Node",
+        "isolatedModules": true,
+        "useDefineForClassFields": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "noEmit": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "allowJs": true,
+        "checkJs": true,
+    },
+    "include": [
+        "web/src/**/*.d.ts",
+        "web/src/**/*.ts",
+        "web/src/**/*.js",
+    ],
+}

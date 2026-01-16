@@ -1,59 +1,58 @@
-import { encodeSource, decodeSource, applySizeToSvg, applyFillColorToSvg, debug } from "./utils.js";
-import { state, setLastTypstSelection, storeValue } from "./state.js";
+import { encodeSource, decodeSource, debug } from "./utils.js";
+import { applyFillColorToSvgString, applySize } from "./svg.js";
+import { lastTypstForm, setLastTypstForm, storeValue, TypstForm } from "./state.js";
 import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode, setTypstCode, setFontSize, setFillColor, setButtonText, updatePreview } from "./ui.js";
 
 /**
- * Finds a Typst shape in the current selection or uses cached selection
- * @param {Array} selectedShapes - Currently selected shapes
- * @param {Array} allSlides - All presentation slides
- * @param {Object} context - PowerPoint context
- * @returns {Promise<Object|null>} Typst shape or null
+ * Finds a Typst shape in the current selection or uses cached selection.
  */
-async function findTypstShape(selectedShapes, allSlides, context) {
-  let typstShape = selectedShapes.find(
+async function findTypstShape(selectedShapes: PowerPoint.Shape[], allSlides: PowerPoint.Slide[],
+  context: PowerPoint.RequestContext): Promise<PowerPoint.Shape | undefined> {
+  const typstShape = selectedShapes.find(
     shape => shape.altTextDescription && shape.altTextDescription.startsWith("TYPST:"),
   );
+  if (typstShape) return typstShape;
 
-  if (typstShape || !state.lastTypstSelection) {
-    return typstShape;
-  }
+  if (!lastTypstForm) return undefined;
 
   try {
-    const targetSlide = allSlides.find(slide => slide.id === state.lastTypstSelection.slideId) || allSlides[0];
-    if (!targetSlide) return null;
+    const targetSlide = allSlides.find(slide => slide.id === (lastTypstForm as TypstForm).slideId) || allSlides[0];
+    if (targetSlide.isNullObject) return undefined;
 
     targetSlide.shapes.load("items");
     await context.sync();
 
-    if (targetSlide.shapes.items.length === 0) return null;
+    if (targetSlide.shapes.items.length === 0) return undefined;
 
     targetSlide.shapes.items.forEach(shape =>
       shape.load(["id", "altTextDescription", "left", "top", "width", "height"]),
     );
     await context.sync();
 
-    return targetSlide.shapes.items.find(shape => shape.id === state.lastTypstSelection.shapeId);
+    return targetSlide.shapes.items.find(shape => shape.id === (lastTypstForm as TypstForm).shapeId);
   } catch (error) {
     debug("Fallback to last selection failed:", error);
-    return null;
+    return undefined;
   }
 }
 
 /**
  * Tags a shape with Typst metadata
- * @param {Object} shape - PowerPoint shape object
- * @param {string} payload - Encoded Typst source
- * @param {string} fontSize - Font size value
- * @param {string|null} fillColor - Fill color value or null if disabled
- * @param {Object} position - Position with left and top properties
- * @param {Object} size - Size with width and height properties
- * @param {Object} context - PowerPoint context
+ * @param shape PowerPoint shape object
+ * @param payload Encoded Typst source
+ * @param fontSize Font size value
+ * @param fillColor Fill color value or null if disabled
+ * @param position Position with left and top properties
+ * @param size Size with width and height properties
+ * @param context PowerPoint (Office) context
  */
-async function tagShape(shape, payload, fontSize, fillColor, position, size, context) {
+async function tagShape(shape: PowerPoint.Shape, payload: string, fontSize: string,
+  fillColor: string | null, position: { left: number | null; top: number | null },
+  size: { width: number; height: number }, context: PowerPoint.RequestContext) {
   shape.altTextDescription = payload;
   shape.name = "Typst Equation";
-  shape.tags.add("TypstFontSize", fontSize.toString());
+  shape.tags.add("TypstFontSize", fontSize);
   shape.tags.add("TypstFillColor", fillColor === null ? "disabled" : fillColor);
 
   if (size.height > 0 && size.width > 0) {
@@ -71,12 +70,13 @@ async function tagShape(shape, payload, fontSize, fillColor, position, size, con
 
 /**
  * Finds the newly inserted shape on a slide
- * @param {string} slideId - Target slide ID
- * @param {Set} existingShapeIds - IDs of shapes before insertion
- * @param {Object} context - PowerPoint context
- * @returns {Promise<Object|null>} The new shape or null
+ * @param slideId Target slide ID
+ * @param existingShapeIds IDs of shapes before insertion
+ * @param context PowerPoint context
+ * @returns The new shape or null
  */
-async function findInsertedShape(slideId, existingShapeIds, context) {
+async function findInsertedShape(slideId: string, existingShapeIds: Set<string>,
+  context: PowerPoint.RequestContext): Promise<PowerPoint.Shape | null> {
   try {
     const slide = context.presentation.slides.getItem(slideId);
     slide.shapes.load("items/id");
@@ -91,7 +91,7 @@ async function findInsertedShape(slideId, existingShapeIds, context) {
       return slide.shapes.items[slide.shapes.items.length - 1];
     }
   } catch (error) {
-    debug("Shape diff fallback failed:", error);
+    debug("Shape diff fallback failed", error);
   }
 
   const postShapes = context.presentation.getSelectedShapes();
@@ -142,7 +142,7 @@ export async function insertOrUpdateFormula() {
 
       debug("Selected shapes:", selection.items.length);
 
-      const position = { left: null, top: null };
+      const position = { left: 0, top: 0 };
       let isReplacing = false;
 
       const typstShape = await findTypstShape(selection.items, allSlides.items, context);
@@ -156,7 +156,7 @@ export async function insertOrUpdateFormula() {
       }
 
       const targetSlide = selectedSlides.items[0] || allSlides.items[0];
-      if (!targetSlide) {
+      if (targetSlide.isNullObject) {
         setStatus("No slide available to insert SVG.", true);
         return;
       }
@@ -169,20 +169,20 @@ export async function insertOrUpdateFormula() {
 
       debug("Target slide chosen for insertion", slideId);
 
-      const { svg: sizedSvg, size } = applySizeToSvg(svgOutput, null);
-      const preparedSvg = applyFillColorToSvg(sizedSvg, fillColor);
+      const { svg: sizedSvg, size } = applySize(svgOutput);
+      const preparedSvg = applyFillColorToSvgString(sizedSvg, fillColor);
 
       Office.context.document.setSelectedDataAsync(
         preparedSvg,
         { coercionType: Office.CoercionType.XmlSvg },
-        async (result) => {
+        (result) => {
           if (result.status !== Office.AsyncResultStatus.Succeeded) {
             console.error("Insert failed:", result.error);
             setStatus("Failed to insert SVG into the slide.", true);
             return;
           }
 
-          await PowerPoint.run(async (ctx2) => {
+          void PowerPoint.run(async (ctx2) => {
             const shapeToTag = await findInsertedShape(slideId, existingShapeIds, ctx2);
 
             if (!shapeToTag) {
@@ -211,12 +211,10 @@ export async function insertOrUpdateFormula() {
 }
 
 /**
- * Reads the font size tag from a shape
- * @param {Object} shape - PowerPoint shape object
- * @param {Object} context - PowerPoint context
- * @returns {Promise<string|null>} Font size value or null
+ * Reads the font size tag from a shape.
  */
-async function readFontSizeTag(shape, context) {
+async function readFontSizeTag(shape: PowerPoint.Shape,
+  context: PowerPoint.RequestContext): Promise<string | null> {
   try {
     const tag = shape.tags.getItemOrNullObject("TypstFontSize");
     tag.load("value");
@@ -230,12 +228,10 @@ async function readFontSizeTag(shape, context) {
 }
 
 /**
- * Reads the fill color tag from a shape
- * @param {Object} shape - PowerPoint shape object
- * @param {Object} context - PowerPoint context
- * @returns {Promise<string|null>} Fill color value or null
+ * Reads the fill color tag from a shape.
  */
-async function readFillColorTag(shape, context) {
+async function readFillColorTag(shape: PowerPoint.Shape,
+  context: PowerPoint.RequestContext): Promise<string | null> {
   try {
     const tag = shape.tags.getItemOrNullObject("TypstFillColor");
     tag.load("value");
@@ -254,12 +250,9 @@ async function readFillColorTag(shape, context) {
  * There is an Office API bug where the fill color is always black if the user
  * uses any "Theme Color" as shape fill:
  * https://github.com/OfficeDev/office-js/issues/6443
- *
- * @param {Object} shape - PowerPoint shape object
- * @param {Object} context - PowerPoint context
- * @returns {Promise<string|null>} The detected fill color or null
  */
-async function detectFillColor(shape, context) {
+async function detectFillColor(shape: PowerPoint.Shape,
+  context: PowerPoint.RequestContext): Promise<string | null> {
   try {
     shape.fill.load(["foregroundColor"]);
     await context.sync();
@@ -328,7 +321,7 @@ export async function handleSelectionChange() {
           debug("Loaded Typst payload from selection");
 
           const slideId = slides.items.length > 0 ? slides.items[0].id : null;
-          setLastTypstSelection({
+          setLastTypstForm({
             slideId,
             shapeId: typstShape.id,
             left: typstShape.left,
@@ -337,7 +330,7 @@ export async function handleSelectionChange() {
             height: typstShape.height,
           });
 
-          updatePreview();
+          void updatePreview();
         } catch (error) {
           console.error("Decode error:", error);
           setStatus("Failed to decode Typst payload from selection.", true);
@@ -348,7 +341,7 @@ export async function handleSelectionChange() {
     }
 
     if (!isTypstShape) {
-      setLastTypstSelection(null);
+      setLastTypstForm(null);
     }
 
     setButtonText(isTypstShape);

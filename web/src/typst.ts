@@ -1,19 +1,32 @@
+import type * as typstWeb from "@myriaddreamin/typst.ts";
 import { createTypstCompiler, createTypstRenderer } from "@myriaddreamin/typst.ts";
 import { disableDefaultFontAssets, loadFonts } from "@myriaddreamin/typst.ts/dist/esm/options.init.mjs";
+
+// @ts-expect-error WASM module import
 import typstCompilerWasm from "@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url";
+// @ts-expect-error WASM module import
 import typstRendererWasm from "@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm?url";
 
-let compiler;
-let renderer;
+let compiler: typstWeb.TypstCompiler;
+let renderer: typstWeb.TypstRenderer;
+
+/**
+ * Initializes both the Typst compiler and renderer.
+ */
+export async function initTypst() {
+  await initCompiler();
+  await initRenderer();
+}
 
 /**
  * Initializes the Typst compiler.
  *
  * See also https://myriad-dreamin.github.io/typst.ts/cookery/guide/all-in-one.html#label-Initializing%20using%20the%20low-level%20API
  */
-export async function initCompiler() {
+async function initCompiler() {
   compiler = createTypstCompiler();
   await compiler.init({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     getModule: () => typstCompilerWasm,
     beforeBuild: [
       disableDefaultFontAssets(),
@@ -30,9 +43,10 @@ export async function initCompiler() {
  *
  * See also https://myriad-dreamin.github.io/typst.ts/cookery/guide/all-in-one.html#label-Initializing%20using%20the%20low-level%20API
  */
-export async function initRenderer() {
+async function initRenderer() {
   renderer = createTypstRenderer();
   await renderer.init({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     getModule: () => typstRendererWasm,
   });
   console.log("Typst renderer initialized");
@@ -40,11 +54,11 @@ export async function initRenderer() {
 
 /**
  * Builds the complete Typst code with page setup and font size
- * @param {string} rawCode - The user's Typst code
- * @param {string} fontSize - Font size in points
- * @returns {string} Complete Typst code ready for compilation
+ * @param rawCode - The user's Typst code
+ * @param fontSize - Font size in points
+ * @returns Complete Typst code ready for compilation
  */
-export function buildRawTypstString(rawCode, fontSize) {
+function buildRawTypstString(rawCode: string, fontSize: string): string {
   return "#set page(margin: 3pt, background: none, width: auto, fill: none, height: auto)"
     + `\n#set text(size: ${fontSize}pt)\n${rawCode}`;
 }
@@ -52,7 +66,7 @@ export function buildRawTypstString(rawCode, fontSize) {
 /**
  * Compiles the given Typst source to SVG.
  */
-export async function typst(source, fontSize) {
+export async function typst(source: string, fontSize: string): Promise<string> {
   const mainFilePath = "/main.typ";
   const typstCode = buildRawTypstString(source, fontSize);
   compiler.addSource(mainFilePath, typstCode);
@@ -65,7 +79,7 @@ export async function typst(source, fontSize) {
     throw new Error("Compilation failed");
   }
 
-  const artifactContent = new Uint8Array(response["result"]);
+  const artifactContent = response["result"] as Uint8Array<ArrayBuffer>;
   const svg = await renderer.renderSvg({
     format: "vector",
     artifactContent: artifactContent,
