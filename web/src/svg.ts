@@ -49,8 +49,15 @@ export function parseAndApplySize(svg: string):
  * Applies fill color to all elements in an SVG element.
  */
 export function applyFillColor(svg: SVGElement, fillColor: string) {
-  const fillable = svg.querySelectorAll("path, circle, rect, ellipse, polygon, polyline, text, g");
-  fillable.forEach((el) => {
-    el.setAttribute("fill", fillColor);
+  const elements = svg.querySelectorAll("*");
+  elements.forEach((el) => {
+    const fill = el.getAttribute("fill");
+    if (fill && fill.toLowerCase() !== "none") {
+      el.setAttribute("fill", fillColor);
+    }
+    const stroke = el.getAttribute("stroke");
+    if (stroke && stroke.toLowerCase() !== "none") {
+      el.setAttribute("stroke", fillColor);
+    }
   });
 }
