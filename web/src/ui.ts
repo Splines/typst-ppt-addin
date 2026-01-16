@@ -150,7 +150,9 @@ export function setupPreviewListeners() {
   const fillColorInput = document.getElementById("fillColor") as HTMLInputElement;
   const fillColorEnabled = document.getElementById("fillColorEnabled") as HTMLInputElement;
 
-  typstInput.addEventListener("input", () => updatePreview);
+  typstInput.addEventListener("input", () => {
+    void updatePreview();
+  });
 
   fontSizeInput.addEventListener("input", () => {
     const fontSize = getFontSize();
