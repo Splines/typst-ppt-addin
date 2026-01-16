@@ -1,8 +1,7 @@
-import { DOM_IDS, DEFAULTS, BUTTON_TEXT, STORAGE_KEYS, THEMES, FILL_COLOR_DISABLED } from "./constants.js";
+import { DOM_IDS, DEFAULTS, BUTTON_TEXT, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
 import { getInputElement, getHTMLElement, getAreaElement } from "./utils/dom.js";
 import { getStoredValue } from "./state.js";
 import { insertOrUpdateFormula } from "./powerpoint.js";
-import { updatePreview } from "./preview.js";
 
 /**
  * Initializes the UI state.
@@ -121,48 +120,4 @@ export function setButtonText(isEditingExistingFormula: boolean) {
 export function setButtonEnabled(enabled: boolean) {
   const button = getHTMLElement(DOM_IDS.INSERT_BTN) as HTMLButtonElement;
   button.disabled = !enabled;
-}
-
-/**
- * Initializes dark mode based on stored preference (defaults to dark mode).
- */
-export function initializeDarkMode() {
-  const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
-  const isDarkMode = isDarkModeEnabled();
-
-  darkModeToggle.checked = isDarkMode;
-  applyTheme(isDarkMode);
-}
-
-/**
- * @returns whether dark mode is enabled
- */
-function isDarkModeEnabled(): boolean {
-  const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
-  return savedTheme === null ? true : savedTheme === THEMES.DARK;
-}
-
-/**
- * Applies the theme to the document.
- */
-function applyTheme(isDark: boolean) {
-  const root = document.documentElement;
-  if (isDark) {
-    root.classList.remove("light-mode");
-  } else {
-    root.classList.add("light-mode");
-  }
-}
-
-/**
- * Sets up the dark mode toggle listener.
- */
-export function setupDarkModeToggle() {
-  const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
-  darkModeToggle.addEventListener("change", (event) => {
-    const isDark = (event.target as HTMLInputElement).checked;
-    applyTheme(isDark);
-    localStorage.setItem(STORAGE_KEYS.THEME, isDark ? THEMES.DARK : THEMES.LIGHT);
-    void updatePreview();
-  });
 }
