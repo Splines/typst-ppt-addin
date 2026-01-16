@@ -1,13 +1,11 @@
-import { debug } from "./utils";
-
 /**
  * Applies explicit width and height attributes to an SVG element.
  *
  * @param svg SVG content as string
- * @returns Modified SVG and computed size
+ * @returns Modified SVG element and computed size
  */
 export function applySize(svg: string):
-{ svg: string; size: { width: number; height: number } } {
+{ svgElement: SVGElement; size: { width: number; height: number } } {
   const parser = new DOMParser();
   const doc = parser.parseFromString(svg, "image/svg+xml");
   const svgElement = doc.documentElement as unknown as SVGGraphicsElement;
@@ -36,20 +34,17 @@ export function applySize(svg: string):
     svgElement.setAttribute("height", height.toString());
     svgElement.setAttribute("width", width.toString());
 
-    const serializer = new XMLSerializer();
-    const modifiedSvg = serializer.serializeToString(svgElement);
-
-    return { svg: modifiedSvg, size: { width, height } };
+    return { svgElement, size: { width, height } };
   }
 
   const viewBoxAttr = svgElement.getAttribute("viewBox");
   if (!viewBoxAttr) {
-    return { svg, size: computeSizeFromSvg(svg) };
+    return { svgElement, size: computeSizeFromSvg(svg) };
   }
 
   const parts = viewBoxAttr.trim().split(/\s+/).map(Number);
   if (parts.length !== 4 || parts[2] <= 0 || parts[3] <= 0) {
-    return { svg, size: computeSizeFromSvg(svg) };
+    return { svgElement, size: computeSizeFromSvg(svg) };
   }
 
   const aspectRatio = parts[2] / parts[3];
@@ -59,10 +54,7 @@ export function applySize(svg: string):
   svgElement.setAttribute("height", height.toString());
   svgElement.setAttribute("width", width.toString());
 
-  const serializer = new XMLSerializer();
-  const modifiedSvg = serializer.serializeToString(svgElement);
-
-  return { svg: modifiedSvg, size: { width, height } };
+  return { svgElement, size: { width, height } };
 }
 
 /**
@@ -103,30 +95,6 @@ export function computeSizeFromSvg(svg: string, scale = 1.0, fallbackWidth = 300
   }
 
   return { width: fallbackWidth, height: fallbackWidth * 0.6 };
-}
-
-/**
- * Applies fill color to all elements in an SVG string.
- */
-export function applyFillColorToSvgString(svg: string, fillColor: string | null) {
-  if (fillColor === null) {
-    // user wants to use no color at all, or the color from Typst code
-    return svg;
-  }
-
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(svg, "image/svg+xml");
-    const svgElement = doc.documentElement as unknown as SVGElement;
-
-    applyFillColor(svgElement, fillColor);
-
-    const serializer = new XMLSerializer();
-    return serializer.serializeToString(svgElement);
-  } catch (error) {
-    debug("applyFillColorToSvg failed", error);
-    return svg;
-  }
 }
 
 /**

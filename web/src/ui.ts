@@ -112,8 +112,8 @@ export async function updatePreview() {
     return;
   }
 
-  const { svg: processedSvg } = applySize(svgOutput);
-  previewElement.innerHTML = processedSvg;
+  const { svgElement: processedSvg } = applySize(svgOutput);
+  previewElement.innerHTML = processedSvg.outerHTML;
   previewElement.style.color = "";
 
   const svgElement = previewElement.querySelector("svg");

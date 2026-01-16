@@ -1,5 +1,5 @@
 import { encodeSource, decodeSource, debug } from "./utils.js";
-import { applyFillColorToSvgString, applySize } from "./svg.js";
+import { applyFillColor, applySize } from "./svg.js";
 import { lastTypstForm, setLastTypstForm, storeValue, TypstForm } from "./state.js";
 import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode, setTypstCode, setFontSize, setFillColor, setButtonText, updatePreview } from "./ui.js";
@@ -169,8 +169,12 @@ export async function insertOrUpdateFormula() {
 
       debug("Target slide chosen for insertion", slideId);
 
-      const { svg: sizedSvg, size } = applySize(svgOutput);
-      const preparedSvg = applyFillColorToSvgString(sizedSvg, fillColor);
+      const { svgElement, size } = applySize(svgOutput);
+      if (fillColor) {
+        applyFillColor(svgElement, fillColor);
+      }
+      const serializer = new XMLSerializer();
+      const preparedSvg = serializer.serializeToString(svgElement);
 
       Office.context.document.setSelectedDataAsync(
         preparedSvg,
