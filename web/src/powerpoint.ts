@@ -4,6 +4,7 @@ import { lastTypstForm, setLastTypstForm, storeValue, TypstForm } from "./state.
 import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode, setTypstCode, setFontSize, setFillColor, setButtonText, updatePreview } from "./ui.js";
 import { isTypstPayload, createTypstPayload, extractTypstCode } from "./payload.js";
+import { SHAPE_CONFIG, FILL_COLOR_DISABLED, DEFAULTS, STORAGE_KEYS } from "./constants.js";
 
 /**
  * Finds a Typst shape in the current selection or uses cached selection.
@@ -52,9 +53,9 @@ async function tagShape(shape: PowerPoint.Shape, payload: string, fontSize: stri
   fillColor: string | null, position: { left: number; top: number } | null,
   size: { width: number; height: number }, context: PowerPoint.RequestContext) {
   shape.altTextDescription = payload;
-  shape.name = "Typst Equation";
-  shape.tags.add("TypstFontSize", fontSize);
-  shape.tags.add("TypstFillColor", fillColor === null ? "disabled" : fillColor);
+  shape.name = SHAPE_CONFIG.NAME;
+  shape.tags.add(SHAPE_CONFIG.TAGS.FONT_SIZE, fontSize);
+  shape.tags.add(SHAPE_CONFIG.TAGS.FILL_COLOR, fillColor === null ? FILL_COLOR_DISABLED : fillColor);
 
   if (size.height > 0 && size.width > 0) {
     shape.height = size.height;
@@ -110,8 +111,8 @@ export async function insertOrUpdateFormula() {
   const fontSize = getFontSize();
   const fillColor = getFillColor();
 
-  storeValue("typstFontSize", fontSize);
-  storeValue("typstFillColor", fillColor);
+  storeValue(STORAGE_KEYS.FONT_SIZE, fontSize);
+  storeValue(STORAGE_KEYS.FILL_COLOR, fillColor);
 
   debug("Handle action start");
   const svgOutput = await typst(rawCode, fontSize);
@@ -213,35 +214,20 @@ export async function insertOrUpdateFormula() {
 }
 
 /**
- * Reads the font size tag from a shape.
+ * Reads a tag value from a shape.
  */
-async function readFontSizeTag(shape: PowerPoint.Shape,
-  context: PowerPoint.RequestContext): Promise<string | null> {
+async function readShapeTag(
+  shape: PowerPoint.Shape,
+  tagName: string,
+  context: PowerPoint.RequestContext,
+): Promise<string | null> {
   try {
-    const tag = shape.tags.getItemOrNullObject("TypstFontSize");
+    const tag = shape.tags.getItemOrNullObject(tagName);
     tag.load("value");
     await context.sync();
-
     return tag.isNullObject ? null : tag.value;
   } catch (error) {
-    debug("Error reading tags", error);
-    return null;
-  }
-}
-
-/**
- * Reads the fill color tag from a shape.
- */
-async function readFillColorTag(shape: PowerPoint.Shape,
-  context: PowerPoint.RequestContext): Promise<string | null> {
-  try {
-    const tag = shape.tags.getItemOrNullObject("TypstFillColor");
-    tag.load("value");
-    await context.sync();
-
-    return tag.isNullObject ? null : tag.value;
-  } catch (error) {
-    debug("Error reading fill color tag", error);
+    debug(`Error reading tag ${tagName}:`, error);
     return null;
   }
 }
@@ -299,10 +285,10 @@ export async function handleSelectionChange() {
 
         try {
           const typstCode = extractTypstCode(typstShape.altTextDescription);
-          const storedFontSize = await readFontSizeTag(typstShape, context);
-          const storedFillColor = await readFillColorTag(typstShape, context);
+          const storedFontSize = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.FONT_SIZE, context);
+          const storedFillColor = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.FILL_COLOR, context);
 
-          setFontSize(storedFontSize || "20");
+          setFontSize(storedFontSize || DEFAULTS.FONT_SIZE);
 
           const actualColor = await detectFillColor(typstShape, context);
 
@@ -310,7 +296,7 @@ export async function handleSelectionChange() {
           if (actualColor) {
             fillColorToSet = actualColor;
             debug("Using detected color from shape:", actualColor);
-          } else if (storedFillColor === "disabled" || !storedFillColor) {
+          } else if (storedFillColor === FILL_COLOR_DISABLED || !storedFillColor) {
             fillColorToSet = null;
           } else {
             fillColorToSet = storedFillColor;
