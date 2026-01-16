@@ -70,21 +70,3 @@ export class DOMCache {
     this.cache.clear();
   }
 }
-
-/**
- * Validates that all required DOM elements exist.
- * @throws Error if any element is missing
- */
-export function validateDOMElements(ids: string[]): void {
-  const missing: string[] = [];
-  for (const id of ids) {
-    if (!document.getElementById(id)) {
-      missing.push(id);
-    }
-  }
-  if (missing.length > 0) {
-    throw new Error(
-      `Required DOM elements not found: ${missing.join(", ")}`,
-    );
-  }
-}
