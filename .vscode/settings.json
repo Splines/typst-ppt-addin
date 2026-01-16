@@ -18,15 +18,14 @@
         "html",
         "css",
     ],
-    "[javascript,html,css]": {
+    "[javascript,typescript,html,css]": {
         "editor.formatOnSave": false,
         "editor.defaultFormatter": "dbaeumer.vscode-eslint",
         "editor.indentSize": 2,
         "editor.tabSize": 2,
     },
-    // Disable VSCode-native JS validation since our JS files might include
-    // ERB syntax, that would otherwise be flagged as invalid
-    "javascript.validate.enable": false,
+    "javascript.format.enable": false,
+    "typescript.format.enable": false,
     //////////////////////////////////////
     // Files
     //////////////////////////////////////
