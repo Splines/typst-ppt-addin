@@ -4,6 +4,7 @@ import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { DOM_IDS, DEFAULTS, BUTTON_TEXT, PREVIEW_CONFIG, STORAGE_KEYS, THEMES, FILL_COLOR_DISABLED } from "./constants.js";
 import { getInputElement, getHTMLElement, getAreaElement } from "./utils/dom.js";
 import { getStoredValue } from "./state.js";
+import { insertOrUpdateFormula } from "./powerpoint.js";
 
 /**
  * Initializes the UI state.
@@ -18,6 +19,28 @@ export function initializeUIState() {
   if (savedFillColor) {
     setFillColor(savedFillColor === FILL_COLOR_DISABLED ? null : savedFillColor);
   }
+}
+
+/**
+ * Sets up event listeners for UI interactions.
+ */
+export function setupEventListeners() {
+  const insertButton = document.getElementById(DOM_IDS.INSERT_BTN);
+  if (insertButton) {
+    insertButton.onclick = insertOrUpdateFormula;
+  }
+
+  const typstInput = document.getElementById(DOM_IDS.TYPST_INPUT);
+  if (typstInput) {
+    typstInput.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.key === "Enter") {
+        event.preventDefault();
+        void insertOrUpdateFormula();
+      }
+    });
+  }
+
+  setupPreviewListeners();
 }
 
 /**
