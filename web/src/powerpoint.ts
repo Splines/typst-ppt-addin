@@ -48,7 +48,7 @@ async function findTypstShape(selectedShapes: PowerPoint.Shape[], allSlides: Pow
  * @param context PowerPoint (Office) context
  */
 async function tagShape(shape: PowerPoint.Shape, payload: string, fontSize: string,
-  fillColor: string | null, position: { left: number | null; top: number | null },
+  fillColor: string | null, position: { left: number; top: number } | null,
   size: { width: number; height: number }, context: PowerPoint.RequestContext) {
   shape.altTextDescription = payload;
   shape.name = "Typst Equation";
@@ -60,7 +60,7 @@ async function tagShape(shape: PowerPoint.Shape, payload: string, fontSize: stri
     shape.width = size.width;
   }
 
-  if (position.left !== null && position.top !== null) {
+  if (position) {
     shape.left = position.left;
     shape.top = position.top;
   }
@@ -142,19 +142,6 @@ export async function insertOrUpdateFormula() {
 
       debug("Selected shapes:", selection.items.length);
 
-      const position = { left: 0, top: 0 };
-      let isReplacing = false;
-
-      const typstShape = await findTypstShape(selection.items, allSlides.items, context);
-
-      if (typstShape) {
-        position.left = typstShape.left;
-        position.top = typstShape.top;
-        typstShape.delete();
-        isReplacing = true;
-        await context.sync();
-      }
-
       const targetSlide = selectedSlides.items[0] || allSlides.items[0];
       if (targetSlide.isNullObject) {
         setStatus("No slide available to insert SVG.", true);
@@ -167,7 +154,17 @@ export async function insertOrUpdateFormula() {
       const slideId = targetSlide.id;
       const existingShapeIds = new Set(targetSlide.shapes.items.map(shape => shape.id));
 
-      debug("Target slide chosen for insertion", slideId);
+      let position: { left: number; top: number } | null = null;
+      let isReplacing = false;
+
+      const typstShape = await findTypstShape(selection.items, allSlides.items, context);
+
+      if (typstShape) {
+        position = { left: typstShape.left, top: typstShape.top };
+        typstShape.delete();
+        isReplacing = true;
+        await context.sync();
+      }
 
       const { svgElement, size } = parseAndApplySize(svgOutput);
       if (fillColor) {
