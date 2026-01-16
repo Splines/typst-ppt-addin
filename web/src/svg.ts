@@ -1,100 +1,48 @@
 /**
- * Applies explicit width and height attributes to an SVG element.
+ * Parses SVG string and extracts dimensions, ensuring content isn't clipped.
  *
  * @param svg SVG content as string
- * @returns Modified SVG element and computed size
+ * @returns SVG element and computed size
  */
-export function applySize(svg: string):
+export function parseAndApplySize(svg: string):
 { svgElement: SVGElement; size: { width: number; height: number } } {
   const parser = new DOMParser();
   const doc = parser.parseFromString(svg, "image/svg+xml");
   const svgElement = doc.documentElement as unknown as SVGGraphicsElement;
 
+  // Temporarily insert into DOM to measure actual content bounds
   const tempContainer = document.createElement("div");
   tempContainer.style.position = "absolute";
   tempContainer.style.visibility = "hidden";
-  tempContainer.style.width = "0";
-  tempContainer.style.height = "0";
+  tempContainer.style.pointerEvents = "none";
   document.body.appendChild(tempContainer);
   tempContainer.appendChild(svgElement);
 
-  const actualBounds = calcBoundingBox(svgElement);
-
-  document.body.removeChild(tempContainer);
-
-  if (actualBounds && actualBounds.width > 0 && actualBounds.height > 0) {
-    svgElement.setAttribute("viewBox",
-      `${actualBounds.x.toString()} ${actualBounds.y.toString()} ${actualBounds.width.toString()} ${actualBounds.height.toString()}`,
-    );
-
-    const aspectRatio = actualBounds.width / actualBounds.height;
-    const height = actualBounds.height;
-    const width = height * aspectRatio;
-
-    svgElement.setAttribute("height", height.toString());
-    svgElement.setAttribute("width", width.toString());
-
+  let bbox;
+  try {
+    bbox = svgElement.getBBox();
+  } catch {
+    document.body.removeChild(tempContainer);
+    const width = parseFloat(svgElement.getAttribute("width") || "400");
+    const height = parseFloat(svgElement.getAttribute("height") || "250");
     return { svgElement, size: { width, height } };
   }
 
-  const viewBoxAttr = svgElement.getAttribute("viewBox");
-  if (!viewBoxAttr) {
-    return { svgElement, size: computeSizeFromSvg(svg) };
-  }
+  document.body.removeChild(tempContainer);
 
-  const parts = viewBoxAttr.trim().split(/\s+/).map(Number);
-  if (parts.length !== 4 || parts[2] <= 0 || parts[3] <= 0) {
-    return { svgElement, size: computeSizeFromSvg(svg) };
-  }
+  // Add some minor padding to avoid clipping
+  const padding = Math.max(bbox.width, bbox.height) * 0.04;
+  const x = bbox.x - padding;
+  const y = bbox.y - padding;
+  const width = bbox.width + 2 * padding;
+  const height = bbox.height + 2 * padding;
 
-  const aspectRatio = parts[2] / parts[3];
-  const height = parts[3];
-  const width = height * aspectRatio;
-
-  svgElement.setAttribute("height", height.toString());
+  // Set viewBox to actual content bounds with padding
+  svgElement.setAttribute("viewBox", `${x.toString()} ${y.toString()} ${width.toString()} ${height.toString()}`);
   svgElement.setAttribute("width", width.toString());
+  svgElement.setAttribute("height", height.toString());
 
   return { svgElement, size: { width, height } };
-}
-
-/**
- * Calculates the actual bounding box of SVG content including a small padding.
- *
- * @param svg The SVG element to measure
- * @returns Bounding box or null
- */
-function calcBoundingBox(svg: SVGGraphicsElement):
-{ x: number; y: number; width: number; height: number } | null {
-  const bbox = svg.getBBox();
-  const padding = Math.max(bbox.width, bbox.height) * 0.1;
-
-  return {
-    x: bbox.x - padding,
-    y: bbox.y - padding,
-    width: bbox.width + 2 * padding,
-    height: bbox.height + 2 * padding,
-  };
-}
-
-/**
- * Computes the size of an SVG from its viewBox attribute
- * @param svg SVG content
- * @param scale Scale factor to apply
- * @param fallbackWidth Width to use if viewBox not found
- * @returns Computed dimensions
- */
-export function computeSizeFromSvg(svg: string, scale = 1.0, fallbackWidth = 300): { width: number; height: number } {
-  const viewBoxPattern = /viewBox\s*=\s*["']\s*([0-9.+-]+)\s+([0-9.+-]+)\s+([0-9.+-]+)\s+([0-9.+-]+)\s*["']/i;
-  const match = viewBoxPattern.exec(svg);
-
-  if (match) {
-    const [, , , viewBoxWidth, viewBoxHeight] = match.map(Number);
-    if (viewBoxWidth > 0 && viewBoxHeight > 0) {
-      return { width: viewBoxWidth * scale, height: viewBoxHeight * scale };
-    }
-  }
-
-  return { width: fallbackWidth, height: fallbackWidth * 0.6 };
 }
 
 /**

@@ -1,6 +1,6 @@
 import { typst } from "./typst.js";
 import { storeValue } from "./state.js";
-import { applyFillColor, applySize } from "./svg.js";
+import { applyFillColor, parseAndApplySize } from "./svg.js";
 
 /**
  * Sets the status message in the UI.
@@ -112,7 +112,7 @@ export async function updatePreview() {
     return;
   }
 
-  const { svgElement: processedSvg } = applySize(svgOutput);
+  const { svgElement: processedSvg } = parseAndApplySize(svgOutput);
   previewElement.innerHTML = processedSvg.outerHTML;
   previewElement.style.color = "";
 

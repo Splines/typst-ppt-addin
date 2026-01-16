@@ -1,5 +1,5 @@
 import { encodeSource, decodeSource, debug } from "./utils.js";
-import { applyFillColor, applySize } from "./svg.js";
+import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { lastTypstForm, setLastTypstForm, storeValue, TypstForm } from "./state.js";
 import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode, setTypstCode, setFontSize, setFillColor, setButtonText, updatePreview } from "./ui.js";
@@ -169,7 +169,7 @@ export async function insertOrUpdateFormula() {
 
       debug("Target slide chosen for insertion", slideId);
 
-      const { svgElement, size } = applySize(svgOutput);
+      const { svgElement, size } = parseAndApplySize(svgOutput);
       if (fillColor) {
         applyFillColor(svgElement, fillColor);
       }
