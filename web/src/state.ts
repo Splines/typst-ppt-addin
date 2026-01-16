@@ -2,17 +2,24 @@
  * Application state management
  */
 
-export const state = {
-  lastTypstSelection: null,
+export type TypstForm = {
+  slideId: string | null;
+  shapeId: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 };
+
+export let lastTypstForm: TypstForm | null;
 
 /**
  * Updates the last selected Typst shape information.
  *
  * @param selection Selection info with slideId, shapeId, left, top, width, height
  */
-export function setLastTypstSelection(selection: null) {
-  state.lastTypstSelection = selection;
+export function setLastTypstForm(selection: TypstForm | null) {
+  lastTypstForm = selection;
 }
 
 /**

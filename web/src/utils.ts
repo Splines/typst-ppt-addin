@@ -17,6 +17,6 @@ export function decodeSource(base64: string) {
 /**
  * Logs debug messages with a consistent prefix.
  */
-export function debug(...args: string[]) {
+export function debug(...args: unknown[]) {
   console.log("[TypstAddin]", ...args);
 }

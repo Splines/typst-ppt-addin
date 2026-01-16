@@ -30,10 +30,10 @@ export function setFontSize(fontSize: string) {
 /**
  * @returns Fill color value or null if disabled
  */
-export function getFillColor(): string | null {
+export function getFillColor(): string {
   const checkbox = document.getElementById("fillColorEnabled") as HTMLInputElement;
   const enabled = checkbox.checked;
-  if (!enabled) return null;
+  if (!enabled) return "";
 
   const fillColorInput = document.getElementById("fillColor") as HTMLInputElement;
   return fillColorInput.value || "#000000";
