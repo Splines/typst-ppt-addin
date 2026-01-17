@@ -135,7 +135,7 @@ input:checked~.slider::before {
     gap: 8px;
 }
 
-.fill-color-group {
+.checkbox-group {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -152,11 +152,59 @@ input:checked~.slider::before {
         width: 16px;
         height: 16px;
     }
+}
 
+.fill-color-group {
     input[type="color"]:disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
+}
+
+.input-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.math-delimiter {
+    font-family: "Courier New", monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: opacity 0.2s, visibility 0.2s;
+    user-select: none;
+}
+
+#mathDelimiterTop {
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+#mathDelimiterBottom {
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+.input-wrapper.math-mode-disabled .math-delimiter {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+}
+
+.input-wrapper.math-mode-disabled textarea {
+    border-radius: 4px;
+}
+
+.input-wrapper:not(.math-mode-disabled) textarea {
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
 }
 
 textarea {
@@ -209,6 +257,19 @@ button {
     gap: 6px;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(135deg, #0078d4 0%, #00AFE0 100%);
+
+    &:hover {
+        background: linear-gradient(135deg, #005a9e 0%, #00a0d2 100%);
+    }
+
+    &.update-mode {
+        background: var(--button-bg);
+
+        &:hover {
+            background: var(--button-hover);
+        }
+    }
 }
 
 .footer {

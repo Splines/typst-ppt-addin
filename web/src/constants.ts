@@ -10,6 +10,7 @@ export const SHAPE_CONFIG = {
   TAGS: {
     FONT_SIZE: "TypstFontSize",
     FILL_COLOR: "TypstFillColor",
+    MATH_MODE: "TypstMathMode",
   },
 } as const;
 
@@ -26,6 +27,8 @@ export const DOM_IDS = {
   FONT_SIZE: "fontSize",
   FILL_COLOR_ENABLED: "fillColorEnabled",
   FILL_COLOR: "fillColor",
+  MATH_MODE_ENABLED: "mathModeEnabled",
+  INPUT_WRAPPER: "inputWrapper",
   TYPST_INPUT: "typstInput",
   INSERT_BTN: "insertBtn",
   BULK_UPDATE_BTN: "bulkUpdateBtn",
@@ -41,6 +44,7 @@ export const DOM_IDS = {
 export const STORAGE_KEYS = {
   FONT_SIZE: "typstFontSize",
   FILL_COLOR: "typstFillColor",
+  MATH_MODE: "typstMathMode",
   THEME: "typstTheme",
 } as const;
 

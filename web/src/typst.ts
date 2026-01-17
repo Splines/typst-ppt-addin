@@ -65,13 +65,18 @@ async function initRenderer() {
  * Note: If you change the number of lines added here, make sure to update
  * the diagnostic range offset in preview.ts accordingly.
  *
- * @param rawCode - The user's Typst code
- * @param fontSize - Font size in points
+ * @param rawCode The user's Typst code
+ * @param fontSize Font size in points
+ * @param mathMode Whether to wrap the code in display math delimiters
  * @returns Complete Typst code ready for compilation
  */
-function buildRawTypstString(rawCode: string, fontSize: string): string {
+function buildRawTypstString(rawCode: string, fontSize: string, mathMode: boolean): string {
+  let code = rawCode;
+  if (mathMode) {
+    code = `$\n${rawCode}\n$`;
+  }
   return "#set page(margin: 3pt, background: none, width: auto, fill: none, height: auto)"
-    + `\n#set text(size: ${fontSize}pt)\n${rawCode}`;
+    + `\n#set text(size: ${fontSize}pt)\n${code}`;
 }
 
 export interface CompilationResult {
@@ -99,9 +104,9 @@ export type Diagnostics = (string | DiagnosticMessage)[] | undefined;
 /**
  * Compiles the given Typst source to SVG.
  */
-export async function typst(source: string, fontSize: string): Promise<CompilationResult> {
+export async function typst(source: string, fontSize: string, mathMode: boolean): Promise<CompilationResult> {
   const mainFilePath = "/main.typ";
-  const typstCode = buildRawTypstString(source, fontSize);
+  const typstCode = buildRawTypstString(source, fontSize, mathMode);
   compiler.addSource(mainFilePath, typstCode);
   const response = await compiler.compile({ mainFilePath });
   const diagnostics: Diagnostics = response.diagnostics;

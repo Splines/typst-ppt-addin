@@ -1,8 +1,8 @@
 import { FILL_COLOR_DISABLED, SHAPE_CONFIG, DEFAULTS } from "./constants.js";
 import { extractTypstCode, isTypstPayload } from "./payload.js";
-import { updatePreview, updateButtonState } from "./preview.js";
+import { updatePreview, updateButtonState, restoreMathModeFromStorage, updateMathModeVisuals } from "./preview.js";
 import { readShapeTag, setLastTypstId } from "./shape.js";
-import { setButtonText, setFillColor, setFontSize, setStatus, setTypstCode, setBulkUpdateButtonVisible } from "./ui.js";
+import { setButtonText, setFillColor, setFontSize, setMathModeEnabled, setStatus, setTypstCode, setBulkUpdateButtonVisible } from "./ui.js";
 import { debug } from "./utils/logger.js";
 
 /**
@@ -28,6 +28,7 @@ export async function handleSelectionChange() {
       setLastTypstId(null);
       setButtonText(false);
       setBulkUpdateButtonVisible(false);
+      restoreMathModeFromStorage();
       return;
     }
 
@@ -40,6 +41,7 @@ export async function handleSelectionChange() {
       setBulkUpdateButtonVisible(true);
       setButtonText(true);
       setLastTypstId(null);
+      restoreMathModeFromStorage();
     } else if (typstShapes.length === 1) {
       // Single Typst shape selected - load it for editing
       const typstShape = typstShapes[0];
@@ -52,6 +54,7 @@ export async function handleSelectionChange() {
       setLastTypstId(null);
       setButtonText(false);
       setBulkUpdateButtonVisible(false);
+      restoreMathModeFromStorage();
     }
   });
 }
@@ -65,6 +68,7 @@ async function loadTypstShape(typstShape: PowerPoint.Shape, slideId: string | nu
     const typstCode = extractTypstCode(typstShape.altTextDescription);
     const storedFontSize = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.FONT_SIZE, context);
     const storedFillColor = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.FILL_COLOR, context);
+    const storedMathMode = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.MATH_MODE, context);
 
     setFontSize(storedFontSize || DEFAULTS.FONT_SIZE);
     const actualColor = await detectFillColor(typstShape, context);
@@ -79,6 +83,8 @@ async function loadTypstShape(typstShape: PowerPoint.Shape, slideId: string | nu
 
     setFillColor(fillColorToSet);
     setTypstCode(typstCode);
+    setMathModeEnabled(storedMathMode === "true");
+    updateMathModeVisuals();
     setLastTypstId({ slideId, shapeId: typstShape.id });
 
     updateButtonState();

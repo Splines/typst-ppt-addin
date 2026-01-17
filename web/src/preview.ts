@@ -2,8 +2,9 @@ import { DiagnosticMessage, typst } from "./typst.js";
 import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { DOM_IDS, PREVIEW_CONFIG, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
 import { getAreaElement, getHTMLElement, getInputElement } from "./utils/dom";
-import { getFillColor, getFontSize, getTypstCode, setButtonEnabled } from "./ui";
-import { storeValue } from "./utils/storage.js";
+import { getFillColor, getFontSize, getMathModeEnabled, getTypstCode, setButtonEnabled, setMathModeEnabled } from "./ui";
+import { storeValue, getStoredValue } from "./utils/storage.js";
+import { lastTypstShapeId } from "./shape.js";
 
 /**
  * Sets up event listeners for preview updates.
@@ -13,6 +14,7 @@ export function setupPreviewListeners() {
   const fontSizeInput = getInputElement(DOM_IDS.FONT_SIZE);
   const fillColorInput = getInputElement(DOM_IDS.FILL_COLOR);
   const fillColorEnabled = getInputElement(DOM_IDS.FILL_COLOR_ENABLED);
+  const mathModeEnabled = getInputElement(DOM_IDS.MATH_MODE_ENABLED);
 
   typstInput.addEventListener("input", () => {
     updateButtonState();
@@ -38,6 +40,47 @@ export function setupPreviewListeners() {
     storeValue(STORAGE_KEYS.FILL_COLOR, fillColor || FILL_COLOR_DISABLED);
     void updatePreview();
   });
+
+  mathModeEnabled.addEventListener("change", () => {
+    const mathMode = getMathModeEnabled();
+    if (!lastTypstShapeId) {
+      // Only save to storage when in insert mode (no shape selected)
+      storeValue(STORAGE_KEYS.MATH_MODE, mathMode.toString());
+    }
+    updateMathModeVisuals();
+    void updatePreview();
+  });
+
+  updateMathModeVisuals();
+}
+
+/**
+ * Restores the math mode setting from localStorage.
+ */
+export function restoreMathModeFromStorage() {
+  const savedMathMode = getStoredValue(STORAGE_KEYS.MATH_MODE);
+  if (savedMathMode !== null) {
+    setMathModeEnabled(savedMathMode === "true");
+    updateMathModeVisuals();
+    void updatePreview();
+  }
+}
+
+/**
+ * Updates the visual state of the input wrapper based on math mode.
+ */
+export function updateMathModeVisuals() {
+  const mathMode = getMathModeEnabled();
+  const inputWrapper = getHTMLElement(DOM_IDS.INPUT_WRAPPER);
+  const textarea = getAreaElement(DOM_IDS.TYPST_INPUT);
+
+  if (mathMode) {
+    inputWrapper.classList.remove("math-mode-disabled");
+    textarea.placeholder = "Enter Typst code, e.g. a^2 + b^2 = c^2";
+  } else {
+    inputWrapper.classList.add("math-mode-disabled");
+    textarea.placeholder = "Enter Typst code, e.g. $ a^2 + b^2 = c^2 $";
+  }
 }
 
 /**
@@ -46,6 +89,7 @@ export function setupPreviewListeners() {
 export async function updatePreview() {
   const rawCode = getTypstCode().trim();
   const fontSize = getFontSize();
+  const mathMode = getMathModeEnabled();
   const previewElement = getHTMLElement(DOM_IDS.PREVIEW_CONTENT);
   const diagnosticsContainer = getHTMLElement(DOM_IDS.DIAGNOSTICS_CONTAINER);
   const diagnosticsContent = getHTMLElement(DOM_IDS.DIAGNOSTICS_CONTENT);
@@ -56,11 +100,11 @@ export async function updatePreview() {
     return;
   }
 
-  const result = await typst(rawCode, fontSize);
+  const result = await typst(rawCode, fontSize, mathMode);
 
   if (result.diagnostics && result.diagnostics.length > 0) {
     diagnosticsContainer.style.display = "block";
-    displayDiagnostics(result.diagnostics, diagnosticsContent);
+    displayDiagnostics(result.diagnostics, diagnosticsContent, mathMode);
   } else {
     diagnosticsContainer.style.display = "none";
   }
@@ -89,7 +133,7 @@ export async function updatePreview() {
 /**
  * Displays diagnostics in the UI.
  */
-function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content: HTMLElement) {
+function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content: HTMLElement, mathMode: boolean) {
   console.log("Displaying diagnostics:", diagnostics);
   content.innerHTML = "";
 
@@ -120,7 +164,7 @@ function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content
 
     const rangeSpan = document.createElement("span");
     rangeSpan.className = "diagnostic-range";
-    const rangeString = correctDiagnosticRange(diag.range);
+    const rangeString = correctDiagnosticRange(diag.range, mathMode);
     rangeSpan.textContent = rangeString;
 
     headerDiv.appendChild(severitySpan);
@@ -149,14 +193,20 @@ export function updateButtonState() {
  * Corrects the diagnostic range to account for added lines in the Typst code.
  *
  * See `buildRawTypstString` for details.
+ *
+ * @param range The range string from the diagnostic
+ * @param mathMode Whether math mode is enabled (adds extra line offset)
  */
-function correctDiagnosticRange(range: string): string {
+function correctDiagnosticRange(range: string, mathMode: boolean): string {
   const rangeRegex = /(\d+):(\d+)-(\d+):(\d+)/;
   const match = range.match(rangeRegex);
   if (match) {
-    const startLine = parseInt(match[1], 10) - 2;
+    // buildRawTypstString adds 2 lines before user code
+    // If mathMode is enabled, it adds one more line for the opening $
+    const offset = mathMode ? 3 : 2;
+    const startLine = parseInt(match[1], 10) - offset;
     const startCol = parseInt(match[2], 10);
-    const endLine = parseInt(match[3], 10) - 2;
+    const endLine = parseInt(match[3], 10) - offset;
     const endCol = parseInt(match[4], 10);
     return `${startLine.toString()}:${startCol.toString()}-${endLine.toString()}:${endCol.toString()}`;
   }

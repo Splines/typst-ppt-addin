@@ -19,6 +19,7 @@ export type TypstShapeInfo = {
   payload: string;
   fontSize: string;
   fillColor: string | null;
+  mathMode: boolean;
   position?: { left: number; top: number };
   rotation?: number;
   size: { width: number; height: number };
@@ -34,6 +35,7 @@ export async function writeShapeProperties(shape: PowerPoint.Shape, info: TypstS
   shape.tags.add(SHAPE_CONFIG.TAGS.FONT_SIZE, info.fontSize);
   shape.tags.add(SHAPE_CONFIG.TAGS.FILL_COLOR,
     info.fillColor === null ? FILL_COLOR_DISABLED : info.fillColor);
+  shape.tags.add(SHAPE_CONFIG.TAGS.MATH_MODE, info.mathMode.toString());
 
   if (info.size.height > 0 && info.size.width > 0) {
     shape.height = info.size.height;

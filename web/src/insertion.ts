@@ -1,7 +1,7 @@
 import { debug } from "./utils/logger.js";
 import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { typst } from "./typst.js";
-import { setStatus, getFontSize, getFillColor, getTypstCode } from "./ui.js";
+import { setStatus, getFontSize, getFillColor, getMathModeEnabled, getTypstCode } from "./ui.js";
 import { isTypstPayload, createTypstPayload, extractTypstCode } from "./payload.js";
 import { storeValue } from "./utils/storage.js";
 import { lastTypstShapeId, TypstShapeInfo, writeShapeProperties, readShapeTag } from "./shape.js";
@@ -20,8 +20,9 @@ async function prepareTypstSvg(
   typstCode: string,
   fontSize: string,
   fillColor: string | null,
+  mathMode: boolean,
 ): Promise<PreparedSvgResult | null> {
-  const result = await typst(typstCode, fontSize);
+  const result = await typst(typstCode, fontSize, mathMode);
   if (!result.svg) {
     // diagnostics are only shown for preview, not insertion
     return null;
@@ -81,10 +82,11 @@ export async function insertOrUpdateFormula() {
   const rawCode = getTypstCode();
   const fontSize = getFontSize();
   const fillColor = getFillColor();
+  const mathMode = getMathModeEnabled();
   storeValue(STORAGE_KEYS.FONT_SIZE, fontSize);
   storeValue(STORAGE_KEYS.FILL_COLOR, fillColor);
 
-  const prepared = await prepareTypstSvg(rawCode, fontSize, fillColor);
+  const prepared = await prepareTypstSvg(rawCode, fontSize, fillColor, mathMode);
   if (!prepared) {
     setStatus("Typst compile failed.", true);
     return;
@@ -130,6 +132,7 @@ export async function insertOrUpdateFormula() {
         payload: prepared.payload,
         fontSize,
         fillColor: fillColor || null,
+        mathMode,
         position,
         size: prepared.size,
         rotation,
@@ -243,7 +246,8 @@ export async function bulkUpdateFontSize() {
             ? null
             : storedFillColor;
 
-          const prepared = await prepareTypstSvg(typstCode, newFontSize, fillColor);
+          const mathMode = getMathModeEnabled();
+          const prepared = await prepareTypstSvg(typstCode, newFontSize, fillColor, mathMode);
           if (!prepared) {
             debug(`Typst compile failed for shape ${shape.id}`);
             continue;
@@ -267,6 +271,7 @@ export async function bulkUpdateFontSize() {
             payload: prepared.payload,
             fontSize: newFontSize,
             fillColor,
+            mathMode,
             position,
             size: prepared.size,
             rotation,
