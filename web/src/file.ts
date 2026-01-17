@@ -1,5 +1,5 @@
 import { insertOrUpdateFormula } from "./insertion.js";
-import { setStatus, setTypstCode } from "./ui.js";
+import { setStatus, setTypstCode, getMathModeEnabled, setMathModeEnabled } from "./ui.js";
 import { DOM_IDS } from "./constants.js";
 import { getInputElement, getButtonElement, getHTMLElement } from "./utils/dom.js";
 
@@ -43,7 +43,17 @@ export async function handleGenerateFromFile() {
     fileInput.value = "";
     getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN).style.display = "none";
 
-    await insertOrUpdateFormula();
+    // Temporarily disable math mode for file generation
+    // since external files typically include their own $ delimiters
+    const previousMathMode = getMathModeEnabled();
+    setMathModeEnabled(false);
+
+    try {
+      await insertOrUpdateFormula();
+    } finally {
+      // Restore the previous math mode setting
+      setMathModeEnabled(previousMathMode);
+    }
   } catch (error) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     setStatus(`Error reading file: ${error}`, true);
