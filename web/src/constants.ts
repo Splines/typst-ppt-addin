@@ -6,7 +6,7 @@
  * PowerPoint shape configuration.
  */
 export const SHAPE_CONFIG = {
-  NAME: "Typst Equation",
+  NAME: "Typst Shape",
   TAGS: {
     FONT_SIZE: "TypstFontSize",
     FILL_COLOR: "TypstFillColor",
