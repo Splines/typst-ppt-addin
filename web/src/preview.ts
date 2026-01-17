@@ -119,7 +119,8 @@ function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content
 
     const rangeSpan = document.createElement("span");
     rangeSpan.className = "diagnostic-range";
-    rangeSpan.textContent = diag.range;
+    const rangeString = correctDiagnosticRange(diag.range);
+    rangeSpan.textContent = rangeString;
 
     headerDiv.appendChild(severitySpan);
     headerDiv.appendChild(rangeSpan);
@@ -141,4 +142,22 @@ function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content
 export function updateButtonState() {
   const rawCode = getTypstCode().trim();
   setButtonEnabled(rawCode.length > 0);
+}
+
+/**
+ * Corrects the diagnostic range to account for added lines in the Typst code.
+ *
+ * See `buildRawTypstString` for details.
+ */
+function correctDiagnosticRange(range: string): string {
+  const rangeRegex = /(\d+):(\d+)-(\d+):(\d+)/;
+  const match = range.match(rangeRegex);
+  if (match) {
+    const startLine = parseInt(match[1], 10) - 2;
+    const startCol = parseInt(match[2], 10);
+    const endLine = parseInt(match[3], 10) - 2;
+    const endCol = parseInt(match[4], 10);
+    return `${startLine.toString()}:${startCol.toString()}-${endLine.toString()}:${endCol.toString()}`;
+  }
+  return range;
 }

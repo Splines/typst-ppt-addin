@@ -60,7 +60,11 @@ async function initRenderer() {
 }
 
 /**
- * Builds the complete Typst code with page setup and font size
+ * Builds the complete Typst code with page setup and font size.
+ *
+ * Note: If you change the number of lines added here, make sure to update
+ * the diagnostic range offset in preview.ts accordingly.
+ *
  * @param rawCode - The user's Typst code
  * @param fontSize - Font size in points
  * @returns Complete Typst code ready for compilation
