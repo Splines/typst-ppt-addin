@@ -128,7 +128,8 @@ textarea {
     border-radius: 4px;
     padding: 8px;
     font-family: 'Courier New', monospace;
-    font-size: 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
     background: var(--bg-secondary);
     color: var(--text-primary);
     resize: vertical;
