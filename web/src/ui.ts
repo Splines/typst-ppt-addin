@@ -47,8 +47,8 @@ export function setupEventListeners() {
   const fontSizeInput = getInputElement(DOM_IDS.FONT_SIZE);
   fontSizeInput.addEventListener("keydown", handleCtrlEnter);
 
-  const fileInput = getInputElement(DOM_IDS.FILE_INPUT);
-  fileInput.addEventListener("change", handleFileSelection);
+  const fileInput = getButtonElement(DOM_IDS.FILE_INPUT);
+  fileInput.addEventListener("click", handleFileSelection);
 
   const generateFromFileBtn = getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN);
   generateFromFileBtn.onclick = handleGenerateFromFile;
