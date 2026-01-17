@@ -62,6 +62,7 @@ export function restoreMathModeFromStorage() {
   if (savedMathMode !== null) {
     setMathModeEnabled(savedMathMode === "true");
     updateMathModeVisuals();
+    void updatePreview();
   }
 }
 
