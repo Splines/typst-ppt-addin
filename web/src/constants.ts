@@ -28,6 +28,7 @@ export const DOM_IDS = {
   FILL_COLOR: "fillColor",
   TYPST_INPUT: "typstInput",
   INSERT_BTN: "insertBtn",
+  BULK_UPDATE_BTN: "bulkUpdateBtn",
   PREVIEW_CONTENT: "previewContent",
   DARK_MODE_TOGGLE: "darkModeToggle",
 } as const;

@@ -2,10 +2,88 @@ import { debug } from "./utils/logger.js";
 import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode } from "./ui.js";
-import { isTypstPayload, createTypstPayload } from "./payload.js";
+import { isTypstPayload, createTypstPayload, extractTypstCode } from "./payload.js";
 import { storeValue } from "./utils/storage.js";
-import { lastTypstShapeId, TypstShapeInfo, writeShapeProperties } from "./shape.js";
-import { STORAGE_KEYS } from "./constants.js";
+import { lastTypstShapeId, TypstShapeInfo, writeShapeProperties, readShapeTag } from "./shape.js";
+import { STORAGE_KEYS, SHAPE_CONFIG, FILL_COLOR_DISABLED } from "./constants.js";
+
+type PreparedSvgResult = {
+  svg: string;
+  size: { width: number; height: number };
+  payload: string;
+};
+
+/**
+ * Compiles Typst code to SVG and prepares it for insertion.
+ */
+async function prepareTypstSvg(
+  typstCode: string,
+  fontSize: string,
+  fillColor: string | null,
+): Promise<PreparedSvgResult | null> {
+  const svgOutput = await typst(typstCode, fontSize);
+
+  if (typeof svgOutput !== "string") {
+    return null;
+  }
+
+  const { svgElement, size } = parseAndApplySize(svgOutput);
+  if (fillColor) {
+    applyFillColor(svgElement, fillColor);
+  }
+
+  const serializer = new XMLSerializer();
+  const svg = serializer.serializeToString(svgElement);
+  const payload = createTypstPayload(typstCode);
+
+  return { svg, size, payload };
+}
+
+/**
+ * Inserts SVG into PowerPoint and tags it with Typst metadata.
+ */
+async function insertAndTagShape(
+  svg: string,
+  info: TypstShapeInfo,
+  onSuccess?: () => void,
+): Promise<boolean> {
+  return new Promise<boolean>((resolve) => {
+    Office.context.document.setSelectedDataAsync(svg, { coercionType: Office.CoercionType.XmlSvg }, (result) => {
+      if (result.status !== Office.AsyncResultStatus.Succeeded) {
+        resolve(false);
+        return;
+      }
+
+      void PowerPoint.run(async (context) => {
+        const slides = context.presentation.getSelectedSlides();
+        slides.load("items");
+        await context.sync();
+
+        const targetSlide = slides.items[0];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!targetSlide || targetSlide.isNullObject) {
+          resolve(false);
+          return;
+        }
+
+        targetSlide.shapes.load("items");
+        await context.sync();
+
+        const newShape = targetSlide.shapes.items[targetSlide.shapes.items.length - 1];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (newShape && !newShape.isNullObject) {
+          await writeShapeProperties(newShape, info, context);
+        }
+
+        if (onSuccess) {
+          onSuccess();
+        }
+        resolve(true);
+      });
+    },
+    );
+  });
+}
 
 /**
  * Inserts or updates a Typst formula in PowerPoint.
@@ -17,9 +95,8 @@ export async function insertOrUpdateFormula() {
   storeValue(STORAGE_KEYS.FONT_SIZE, fontSize);
   storeValue(STORAGE_KEYS.FILL_COLOR, fillColor);
 
-  const svgOutput = await typst(rawCode, fontSize);
-
-  if (typeof svgOutput !== "string") {
+  const prepared = await prepareTypstSvg(rawCode, fontSize, fillColor);
+  if (!prepared) {
     setStatus("Typst compile failed.", true);
     return;
   }
@@ -55,20 +132,12 @@ export async function insertOrUpdateFormula() {
         await context.sync();
       }
 
-      const { svgElement, size } = parseAndApplySize(svgOutput);
-      if (fillColor) {
-        applyFillColor(svgElement, fillColor);
-      }
-
-      const serializer = new XMLSerializer();
-      const preparedSvg = serializer.serializeToString(svgElement);
-      const payload = createTypstPayload(rawCode);
-      createTypstShape(preparedSvg, targetSlide, isReplacing, {
-        payload,
+      createTypstShape(prepared.svg, targetSlide, isReplacing, {
+        payload: prepared.payload,
         fontSize,
-        fillColor,
+        fillColor: fillColor || null,
         position,
-        size,
+        size: prepared.size,
       });
     });
   } catch (error) {
@@ -163,4 +232,76 @@ async function findInsertedShape(slideId: string, existingShapeIds: Set<string>,
   await context.sync();
 
   return postShapes.items.length > 0 ? postShapes.items[postShapes.items.length - 1] : null;
+}
+
+/**
+ * Updates font size for all selected Typst shapes.
+ */
+export async function bulkUpdateFontSize() {
+  const newFontSize = getFontSize();
+  storeValue(STORAGE_KEYS.FONT_SIZE, newFontSize);
+
+  try {
+    await PowerPoint.run(async (context) => {
+      const selection = context.presentation.getSelectedShapes();
+      selection.load("items");
+      await context.sync();
+
+      const typstShapes = selection.items.filter(shape =>
+        isTypstPayload(shape.altTextDescription),
+      );
+
+      if (typstShapes.length === 0) {
+        setStatus("No Typst shapes selected.", true);
+        return;
+      }
+
+      // typstShapes.forEach(shape =>
+      //   shape.load(["id", "altTextDescription", "left", "top", "width", "height", "tags"]),
+      // );
+      // await context.sync();
+
+      let successCount = 0;
+
+      for (const shape of typstShapes) {
+        try {
+          const typstCode = extractTypstCode(shape.altTextDescription);
+          const storedFillColor = await readShapeTag(shape, SHAPE_CONFIG.TAGS.FILL_COLOR, context);
+
+          const fillColor = !storedFillColor || storedFillColor === FILL_COLOR_DISABLED
+            ? null
+            : storedFillColor;
+
+          const prepared = await prepareTypstSvg(typstCode, newFontSize, fillColor);
+          if (!prepared) {
+            debug(`Typst compile failed for shape ${shape.id}`);
+            continue;
+          }
+
+          const position = { left: shape.left, top: shape.top };
+          shape.delete();
+          await context.sync();
+
+          const success = await insertAndTagShape(prepared.svg, {
+            payload: prepared.payload,
+            fontSize: newFontSize,
+            fillColor,
+            position,
+            size: prepared.size,
+          });
+
+          if (success) {
+            successCount++;
+          }
+        } catch (error) {
+          debug(`Error updating shape ${shape.id}:`, error);
+        }
+      }
+
+      setStatus(`Updated ${successCount.toString()} of ${typstShapes.length.toString()} Typst shapes with font size ${newFontSize}.`);
+    });
+  } catch (error) {
+    console.error("Bulk update error:", error);
+    setStatus("Error updating Typst shapes. See console.", true);
+  }
 }
