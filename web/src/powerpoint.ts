@@ -14,11 +14,9 @@ export async function insertOrUpdateFormula() {
   const rawCode = getTypstCode();
   const fontSize = getFontSize();
   const fillColor = getFillColor();
-
   storeValue(STORAGE_KEYS.FONT_SIZE, fontSize);
   storeValue(STORAGE_KEYS.FILL_COLOR, fillColor);
 
-  debug("Handle action start");
   const svgOutput = await typst(rawCode, fontSize);
 
   if (typeof svgOutput !== "string") {
@@ -44,13 +42,6 @@ export async function insertOrUpdateFormula() {
       }
       targetSlide.load(["id", "shapes/items/id"]);
       await context.sync();
-
-      if (selection.items.length > 0) {
-        selection.items.forEach(shape =>
-          shape.load(["id", "altTextDescription", "left", "top", "width", "height"]),
-        );
-        await context.sync();
-      }
 
       let position: { left: number; top: number } | null = null;
       let isReplacing = false;
@@ -130,13 +121,7 @@ async function findTypstShape(selectedShapes: PowerPoint.Shape[], allSlides: Pow
 
     targetSlide.shapes.load("items");
     await context.sync();
-
     if (targetSlide.shapes.items.length === 0) return undefined;
-
-    targetSlide.shapes.items.forEach(shape =>
-      shape.load(["id", "altTextDescription", "left", "top", "width", "height"]),
-    );
-    await context.sync();
 
     return targetSlide.shapes.items.find(shape => shape.id === id.shapeId);
   } catch (error) {
