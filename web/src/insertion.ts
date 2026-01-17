@@ -126,7 +126,7 @@ export async function insertOrUpdateFormula() {
 
       const typstShape = await findTypstShape(selection.items, allSlides.items, context);
       if (typstShape) {
-        position = { left: typstShape.left, top: typstShape.top };
+        position = calculateCenteredPosition(typstShape, prepared.size);
         typstShape.delete();
         isReplacing = true;
         await context.sync();
@@ -273,7 +273,7 @@ export async function bulkUpdateFontSize() {
             continue;
           }
 
-          const position = { left: shape.left, top: shape.top };
+          const position = calculateCenteredPosition(shape, prepared.size);
           shape.delete();
           await context.sync();
 
@@ -299,4 +299,19 @@ export async function bulkUpdateFontSize() {
     console.error("Bulk update error:", error);
     setStatus("Error updating Typst shapes. See console.", true);
   }
+}
+
+/**
+ * Calculates the position to center a new shape on an old shape's center point.
+ */
+function calculateCenteredPosition(
+  oldShape: { left: number; top: number; width: number; height: number },
+  newSize: { width: number; height: number },
+): { left: number; top: number } {
+  const centerX = oldShape.left + oldShape.width / 2;
+  const centerY = oldShape.top + oldShape.height / 2;
+  return {
+    left: centerX - newSize.width / 2,
+    top: centerY - newSize.height / 2,
+  };
 }
