@@ -1,8 +1,8 @@
 import { initializeUIState, setupEventListeners } from "./ui.js";
-import { handleSelectionChange } from "./powerpoint.js";
 import { initTypst } from "./typst.js";
 import { setupPreviewListeners } from "./preview.js";
 import { initializeDarkMode, setupDarkModeToggle } from "./theme.js";
+import { handleSelectionChange } from "./selection.js";
 
 /**
  * Main initialization function for Office Add-in.

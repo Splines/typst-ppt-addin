@@ -1,11 +1,10 @@
 import { debug } from "./utils/logger.js";
 import { applyFillColor, parseAndApplySize } from "./svg.js";
-import { lastTypstForm, setLastTypstForm, storeValue, TypstForm } from "./state.js";
+import { lastTypstForm, storeValue, TypstForm } from "./state.js";
 import { typst } from "./typst.js";
-import { setStatus, getFontSize, getFillColor, getTypstCode, setTypstCode, setFontSize, setFillColor, setButtonText } from "./ui.js";
-import { isTypstPayload, createTypstPayload, extractTypstCode } from "./payload.js";
-import { SHAPE_CONFIG, FILL_COLOR_DISABLED, DEFAULTS, STORAGE_KEYS } from "./constants.js";
-import { updatePreview } from "./preview.js";
+import { setStatus, getFontSize, getFillColor, getTypstCode } from "./ui.js";
+import { isTypstPayload, createTypstPayload } from "./payload.js";
+import { SHAPE_CONFIG, FILL_COLOR_DISABLED, STORAGE_KEYS } from "./constants.js";
 
 /**
  * Finds a Typst shape in the current selection or uses cached selection.
@@ -208,122 +207,5 @@ export async function insertOrUpdateFormula() {
   } catch (error) {
     console.error("PowerPoint context error:", error);
     setStatus("PowerPoint API error. See console.", true);
-  }
-}
-
-/**
- * Reads a tag value from a shape.
- */
-async function readShapeTag(
-  shape: PowerPoint.Shape,
-  tagName: string,
-  context: PowerPoint.RequestContext,
-): Promise<string | null> {
-  try {
-    const tag = shape.tags.getItemOrNullObject(tagName);
-    tag.load("value");
-    await context.sync();
-    return tag.isNullObject ? null : tag.value;
-  } catch (error) {
-    debug(`Error reading tag ${tagName}:`, error);
-    return null;
-  }
-}
-
-/**
- * Extracts the actual fill color from a shape's fill property.
- *
- * There is an Office API bug where the fill color is always black if the user
- * uses any "Theme Color" as shape fill:
- * https://github.com/OfficeDev/office-js/issues/6443
- */
-async function detectFillColor(shape: PowerPoint.Shape,
-  context: PowerPoint.RequestContext): Promise<string | null> {
-  try {
-    shape.fill.load(["foregroundColor"]);
-    await context.sync();
-    const color = shape.fill.foregroundColor;
-    return color;
-  } catch (error) {
-    debug("Could not extract fill color from shape fill property: ", error);
-    return null;
-  }
-}
-
-/**
- * Handles selection change events in PowerPoint
- */
-export async function handleSelectionChange() {
-  await PowerPoint.run(async (context) => {
-    const shapes = context.presentation.getSelectedShapes();
-    const slides = context.presentation.getSelectedSlides();
-    shapes.load("items");
-    slides.load("items/id");
-    await context.sync();
-
-    if (shapes.items.length > 0) {
-      shapes.items.forEach(shape =>
-        shape.load(["id", "altTextDescription", "left", "top", "width", "height", "tags"]),
-      );
-      await context.sync();
-    }
-
-    if (shapes.items.length === 0) {
-      setLastTypstForm(null);
-      setButtonText(false);
-      return;
-    }
-
-    const typstShape = shapes.items.find(shape =>
-      isTypstPayload(shape.altTextDescription),
-    );
-
-    if (typstShape && typstShape.altTextDescription) {
-      const slideId = slides.items.length > 0 ? slides.items[0].id : null;
-      await loadTypstShape(typstShape, slideId, context);
-      setButtonText(true);
-    } else {
-      setLastTypstForm(null);
-      setButtonText(false);
-    }
-  });
-}
-
-/**
- * Loads Typst shape data into the UI state.
- */
-async function loadTypstShape(typstShape: PowerPoint.Shape, slideId: string | null,
-  context: PowerPoint.RequestContext) {
-  try {
-    const typstCode = extractTypstCode(typstShape.altTextDescription);
-    const storedFontSize = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.FONT_SIZE, context);
-    const storedFillColor = await readShapeTag(typstShape, SHAPE_CONFIG.TAGS.FILL_COLOR, context);
-
-    setFontSize(storedFontSize || DEFAULTS.FONT_SIZE);
-    const actualColor = await detectFillColor(typstShape, context);
-    let fillColorToSet;
-    if (actualColor) {
-      fillColorToSet = actualColor;
-    } else if (storedFillColor === FILL_COLOR_DISABLED || !storedFillColor) {
-      fillColorToSet = null;
-    } else {
-      fillColorToSet = storedFillColor;
-    }
-
-    setFillColor(fillColorToSet);
-    setTypstCode(typstCode);
-    setLastTypstForm({
-      slideId,
-      shapeId: typstShape.id,
-      left: typstShape.left,
-      top: typstShape.top,
-      width: typstShape.width,
-      height: typstShape.height,
-    });
-
-    void updatePreview();
-  } catch (error) {
-    console.error("Decode error:", error);
-    setStatus("Failed to decode Typst payload from selection.", true);
   }
 }
