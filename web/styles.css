@@ -34,27 +34,60 @@ body {
     transition: background 0.2s, color 0.2s;
 }
 
-.theme-toggle {
-    display: flex;
-    justify-content: flex-start;
+/* https://codepen.io/fydsa/pen/abwdpep */
+#themeToggle {
+    --light: #d8dbe0;
+    --dark: #28292c;
+
+    position: relative;
+    width: 200px;
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid var(--border-color);
 
-    label {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        font-size: 13px;
-        color: var(--text-primary);
-        user-select: none;
+    input {
+        position: absolute;
+        display: none;
     }
 
-    input[type="checkbox"] {
-        margin-right: 8px;
+    label {
+        position: absolute;
+        width: 100%;
+        height: 100px;
+        background-color: var(--dark);
+        border-radius: 50px;
         cursor: pointer;
-        width: 16px;
-        height: 16px;
+    }
+
+    input:checked~.slider {
+        background-color: var(--light);
+    }
+
+    input:checked~.slider::before {
+        transform: translateX(95px);
+        background-color: var(--dark);
+        box-shadow: none;
+    }
+
+    .slider {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50px;
+        transition: 0.3s;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 13px;
+            left: 16px;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            box-shadow: inset 28px -4px 0px 0px var(--light);
+            background-color: var(--dark);
+            transition: 0.3s;
+        }
     }
 }
 
