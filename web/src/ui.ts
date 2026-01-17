@@ -1,6 +1,6 @@
 import { DOM_IDS, DEFAULTS, BUTTON_TEXT, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
 import { getInputElement, getHTMLElement, getAreaElement, getButtonElement } from "./utils/dom.js";
-import { insertOrUpdateFormula } from "./insertion.js";
+import { insertOrUpdateFormula, bulkUpdateFontSize } from "./insertion.js";
 import { getStoredValue } from "./utils/storage.js";
 
 /**
@@ -24,6 +24,9 @@ export function initializeUIState() {
 export function setupEventListeners() {
   const insertButton = getButtonElement(DOM_IDS.INSERT_BTN);
   insertButton.onclick = insertOrUpdateFormula;
+
+  const bulkUpdateButton = getButtonElement(DOM_IDS.BULK_UPDATE_BTN);
+  bulkUpdateButton.onclick = bulkUpdateFontSize;
 
   const handleCtrlEnter = (event: KeyboardEvent) => {
     if (event.ctrlKey && event.key === "Enter") {
@@ -121,4 +124,14 @@ export function setButtonText(isEditingExistingFormula: boolean) {
 export function setButtonEnabled(enabled: boolean) {
   const button = getHTMLElement(DOM_IDS.INSERT_BTN) as HTMLButtonElement;
   button.disabled = !enabled;
+}
+
+/**
+ * Shows or hides the bulk update button.
+ *
+ * This button is used to update the font size of multiple selected Typst shapes.
+ */
+export function setBulkUpdateButtonVisible(visible: boolean) {
+  const button = getButtonElement(DOM_IDS.BULK_UPDATE_BTN);
+  button.style.display = visible ? "block" : "none";
 }

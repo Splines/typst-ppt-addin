@@ -1,9 +1,9 @@
-import { FILL_COLOR_DISABLED, SHAPE_CONFIG, DEFAULTS } from "./constants";
-import { extractTypstCode, isTypstPayload } from "./payload";
-import { updatePreview } from "./preview";
-import { readShapeTag, setLastTypstId } from "./shape";
-import { setButtonText, setFillColor, setFontSize, setStatus, setTypstCode } from "./ui";
-import { debug } from "./utils/logger";
+import { FILL_COLOR_DISABLED, SHAPE_CONFIG, DEFAULTS } from "./constants.js";
+import { extractTypstCode, isTypstPayload } from "./payload.js";
+import { updatePreview } from "./preview.js";
+import { readShapeTag, setLastTypstId } from "./shape.js";
+import { setButtonText, setFillColor, setFontSize, setStatus, setTypstCode, setBulkUpdateButtonVisible } from "./ui.js";
+import { debug } from "./utils/logger.js";
 
 /**
  * Handles selection change events.
@@ -26,20 +26,31 @@ export async function handleSelectionChange() {
     if (shapes.items.length === 0) {
       setLastTypstId(null);
       setButtonText(false);
+      setBulkUpdateButtonVisible(false);
       return;
     }
 
-    const typstShape = shapes.items.find(shape =>
+    const typstShapes = shapes.items.filter(shape =>
       isTypstPayload(shape.altTextDescription),
     );
 
-    if (typstShape && typstShape.altTextDescription) {
+    if (typstShapes.length > 1) {
+      // Multiple Typst shapes selected - show bulk update button
+      setBulkUpdateButtonVisible(true);
+      setButtonText(true);
+      setLastTypstId(null);
+    } else if (typstShapes.length === 1) {
+      // Single Typst shape selected - load it for editing
+      const typstShape = typstShapes[0];
       const slideId = slides.items.length > 0 ? slides.items[0].id : null;
       await loadTypstShape(typstShape, slideId, context);
       setButtonText(true);
+      setBulkUpdateButtonVisible(false);
     } else {
+      // No Typst shapes selected
       setLastTypstId(null);
       setButtonText(false);
+      setBulkUpdateButtonVisible(false);
     }
   });
 }
