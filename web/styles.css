@@ -235,3 +235,8 @@ button {
     background: var(--bg-secondary);
     text-align: center;
 }
+
+#spaceBelow {
+    display: block;
+    height: 5em;
+}
