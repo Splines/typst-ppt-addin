@@ -66,6 +66,7 @@ export async function updatePreview() {
   }
 
   if (!result.svg) {
+    previewElement.innerHTML = "";
     return;
   }
 
