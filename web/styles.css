@@ -30,18 +30,17 @@ body {
     font-family: sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    min-width: 320px;
     /* eslint-disable-next-line css/use-baseline */
-    zoom: 115%;
+    zoom: 114%;
     transition: background 0.2s, color 0.2s;
 }
 
 .theme-toggle {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
+    justify-content: flex-start;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
 }
 
 .theme-toggle label {
@@ -63,23 +62,25 @@ body {
 
 .controls {
     display: flex;
-    align-items: center;
-    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
     font-size: 13px;
     color: var(--text-primary);     
 }
 
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .controls label {
-    margin-right: 8px;
     font-weight: 600;
 }
 
-.controls label:not(:first-child) {
-    margin-left: 12px;
-}
-
 .controls input[type="number"] {
-    width: 60px;
+    width: 40px;
     padding: 4px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
@@ -110,7 +111,7 @@ body {
 }
 
 .fill-color-group input[type="checkbox"] {
-    margin-right: 4px;
+    margin: 0 4px 0 0;
     cursor: pointer;
     width: 16px;
     height: 16px;
