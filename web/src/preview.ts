@@ -92,7 +92,7 @@ function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content
   console.log("Displaying diagnostics:", diagnostics);
   content.innerHTML = "";
 
-  diagnostics.forEach((diag) => {
+  diagnostics.forEach((diag, index) => {
     if (typeof diag === "string") {
       const diagElement = document.createElement("div");
       diagElement.className = "diagnostic";
@@ -101,18 +101,34 @@ function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content
       return;
     }
 
+    if (index > 0) {
+      const separator = document.createElement("hr");
+      separator.className = "diagnostic-separator";
+      content.appendChild(separator);
+    }
+
     const diagElement = document.createElement("div");
     diagElement.className = `diagnostic diagnostic-${diag.severity.toLowerCase()}`;
+
+    const headerDiv = document.createElement("div");
+    headerDiv.className = "diagnostic-header";
 
     const severitySpan = document.createElement("span");
     severitySpan.className = "diagnostic-severity";
     severitySpan.textContent = diag.severity;
 
+    const rangeSpan = document.createElement("span");
+    rangeSpan.className = "diagnostic-range";
+    rangeSpan.textContent = diag.range;
+
+    headerDiv.appendChild(severitySpan);
+    headerDiv.appendChild(rangeSpan);
+
     const messageSpan = document.createElement("span");
     messageSpan.className = "diagnostic-message";
     messageSpan.textContent = diag.message;
 
-    diagElement.appendChild(severitySpan);
+    diagElement.appendChild(headerDiv);
     diagElement.appendChild(messageSpan);
 
     content.appendChild(diagElement);

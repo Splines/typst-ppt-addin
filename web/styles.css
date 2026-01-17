@@ -236,6 +236,14 @@ button {
     text-align: center;
 }
 
+#previewLabel {
+    color: #999;
+    font-size: 11px;
+    display: block;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
 #diagnosticsContainer {
     margin-top: 10px;
     border: 1px solid var(--border-color);
@@ -245,11 +253,11 @@ button {
     max-width: 100%;
 }
 
-.diagnostics-label {
-    color: var(--text-secondary);
+#diagnosticsLabel {
+    color: #999;
     font-size: 11px;
-    font-weight: 600;
     display: block;
+    text-align: center;
     margin-bottom: 8px;
 }
 
@@ -261,12 +269,20 @@ button {
 
 .diagnostic {
     display: flex;
-    gap: 8px;
-    padding: 6px 8px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
     border-radius: 3px;
     font-size: 12px;
     line-height: 1.4;
     background: var(--bg-secondary);
+}
+
+.diagnostic-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
 }
 
 .diagnostic-severity {
@@ -276,11 +292,22 @@ button {
     padding: 2px 6px;
     border-radius: 3px;
     white-space: nowrap;
-    align-self: flex-start;
 }
 
 .diagnostic-message {
-    flex: 1;
+    word-wrap: break-word;
+}
+
+.diagnostic-range {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.diagnostic-separator {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 8px 0;
 }
 
 .diagnostic-error .diagnostic-severity {
