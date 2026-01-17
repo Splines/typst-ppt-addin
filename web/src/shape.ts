@@ -15,33 +15,33 @@ export function setLastTypstId(info: TypstShapeId | null) {
   lastTypstShapeId = info;
 }
 
-/**
- * Tags a shape with Typst metadata.
- *
- * @param shape PowerPoint shape object
- * @param payload Encoded Typst source
- * @param fontSize Font size value
- * @param fillColor Fill color value or null if disabled
- * @param position Position with left and top properties
- * @param size Size with width and height properties
- * @param context PowerPoint (Office) context
- */
-export async function tagShape(shape: PowerPoint.Shape, payload: string, fontSize: string,
-  fillColor: string | null, position: { left: number; top: number } | null,
-  size: { width: number; height: number }, context: PowerPoint.RequestContext) {
-  shape.altTextDescription = payload;
-  shape.name = SHAPE_CONFIG.NAME;
-  shape.tags.add(SHAPE_CONFIG.TAGS.FONT_SIZE, fontSize);
-  shape.tags.add(SHAPE_CONFIG.TAGS.FILL_COLOR, fillColor === null ? FILL_COLOR_DISABLED : fillColor);
+export type TypstShapeInfo = {
+  payload: string;
+  fontSize: string;
+  fillColor: string | null;
+  position: { left: number; top: number } | null;
+  size: { width: number; height: number };
+};
 
-  if (size.height > 0 && size.width > 0) {
-    shape.height = size.height;
-    shape.width = size.width;
+/**
+ * Writes shape properties and Typst metadata to a given shape.
+ */
+export async function writeShapeProperties(shape: PowerPoint.Shape, info: TypstShapeInfo,
+  context: PowerPoint.RequestContext) {
+  shape.altTextDescription = info.payload;
+  shape.name = SHAPE_CONFIG.NAME;
+  shape.tags.add(SHAPE_CONFIG.TAGS.FONT_SIZE, info.fontSize);
+  shape.tags.add(SHAPE_CONFIG.TAGS.FILL_COLOR,
+    info.fillColor === null ? FILL_COLOR_DISABLED : info.fillColor);
+
+  if (info.size.height > 0 && info.size.width > 0) {
+    shape.height = info.size.height;
+    shape.width = info.size.width;
   }
 
-  if (position) {
-    shape.left = position.left;
-    shape.top = position.top;
+  if (info.position) {
+    shape.left = info.position.left;
+    shape.top = info.position.top;
   }
 
   await context.sync();

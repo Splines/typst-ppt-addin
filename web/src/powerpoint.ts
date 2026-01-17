@@ -4,7 +4,7 @@ import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode } from "./ui.js";
 import { isTypstPayload, createTypstPayload } from "./payload.js";
 import { storeValue } from "./utils/storage.js";
-import { lastTypstShapeId, tagShape } from "./shape.js";
+import { lastTypstShapeId, TypstShapeInfo, writeShapeProperties } from "./shape.js";
 import { STORAGE_KEYS } from "./constants.js";
 
 /**
@@ -140,6 +140,15 @@ export async function insertOrUpdateFormula() {
       const serializer = new XMLSerializer();
       const preparedSvg = serializer.serializeToString(svgElement);
 
+      const payload = createTypstPayload(rawCode);
+      const info: TypstShapeInfo = {
+        payload,
+        fontSize,
+        fillColor,
+        position,
+        size,
+      };
+
       Office.context.document.setSelectedDataAsync(
         preparedSvg,
         { coercionType: Office.CoercionType.XmlSvg },
@@ -150,9 +159,9 @@ export async function insertOrUpdateFormula() {
             return;
           }
 
-          void PowerPoint.run(async (ctx2) => {
+          void PowerPoint.run(async (context2) => {
             const existingShapeIds = new Set(targetSlide.shapes.items.map(shape => shape.id));
-            const shapeToTag = await findInsertedShape(slideId, existingShapeIds, ctx2);
+            const shapeToTag = await findInsertedShape(slideId, existingShapeIds, context2);
 
             if (!shapeToTag) {
               console.warn("No shape found after insertion; cannot tag Typst payload.");
@@ -160,8 +169,7 @@ export async function insertOrUpdateFormula() {
               return;
             }
 
-            const payload = createTypstPayload(rawCode);
-            await tagShape(shapeToTag, payload, fontSize, fillColor, position, size, ctx2);
+            await writeShapeProperties(shapeToTag, info, context2);
 
             debug("Inserted/updated shape tagged", {
               isReplacing,
