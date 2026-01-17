@@ -1,3 +1,5 @@
+import { SVG_CONFIG } from "./constants.js";
+
 /**
  * Parses SVG string and extracts dimensions, ensuring content isn't clipped.
  *
@@ -23,15 +25,19 @@ export function parseAndApplySize(svg: string):
     bbox = svgElement.getBBox();
   } catch {
     document.body.removeChild(tempContainer);
-    const width = parseFloat(svgElement.getAttribute("width") || "400");
-    const height = parseFloat(svgElement.getAttribute("height") || "250");
-    return { svgElement, size: { width, height } };
+    return {
+      svgElement,
+      size: {
+        width: parseFloat(svgElement.getAttribute("width") || String(SVG_CONFIG.FALLBACK_WIDTH)),
+        height: parseFloat(svgElement.getAttribute("height") || String(SVG_CONFIG.FALLBACK_HEIGHT)),
+      },
+    };
   }
 
   document.body.removeChild(tempContainer);
 
   // Add some minor padding to avoid clipping
-  const padding = Math.max(bbox.width, bbox.height) * 0.04;
+  const padding = Math.max(bbox.width, bbox.height) * SVG_CONFIG.PADDING_RATIO;
   const x = bbox.x - padding;
   const y = bbox.y - padding;
   const width = bbox.width + 2 * padding;

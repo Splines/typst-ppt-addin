@@ -1,12 +1,48 @@
-import { typst } from "./typst.js";
-import { storeValue } from "./state.js";
-import { applyFillColor, parseAndApplySize } from "./svg.js";
+import { DOM_IDS, DEFAULTS, BUTTON_TEXT, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
+import { getInputElement, getHTMLElement, getAreaElement } from "./utils/dom.js";
+import { insertOrUpdateFormula } from "./insertion.js";
+import { getStoredValue } from "./utils/storage.js";
+
+/**
+ * Initializes the UI state.
+ */
+export function initializeUIState() {
+  const savedFontSize = getStoredValue(STORAGE_KEYS.FONT_SIZE);
+  if (savedFontSize) {
+    setFontSize(savedFontSize);
+  }
+
+  const savedFillColor = getStoredValue(STORAGE_KEYS.FILL_COLOR);
+  if (savedFillColor) {
+    setFillColor(savedFillColor === FILL_COLOR_DISABLED ? null : savedFillColor);
+  }
+}
+
+/**
+ * Sets up event listeners for UI interactions.
+ */
+export function setupEventListeners() {
+  const insertButton = document.getElementById(DOM_IDS.INSERT_BTN);
+  if (insertButton) {
+    insertButton.onclick = insertOrUpdateFormula;
+  }
+
+  const typstInput = document.getElementById(DOM_IDS.TYPST_INPUT);
+  if (typstInput) {
+    typstInput.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.key === "Enter") {
+        event.preventDefault();
+        void insertOrUpdateFormula();
+      }
+    });
+  }
+}
 
 /**
  * Sets the status message in the UI.
  */
 export function setStatus(message: string, isError = false) {
-  const statusElement = document.getElementById("status") as HTMLElement;
+  const statusElement = getHTMLElement(DOM_IDS.STATUS);
   statusElement.textContent = message || "";
   statusElement.classList.toggle("error", isError);
 }
@@ -15,28 +51,26 @@ export function setStatus(message: string, isError = false) {
  * @returns the current font size from the UI
  */
 export function getFontSize(): string {
-  const fontSizeInput = document.getElementById("fontSize");
-  return (fontSizeInput as HTMLInputElement).value;
+  return getInputElement(DOM_IDS.FONT_SIZE).value;
 }
 
 /**
  * Sets the font size in the UI.
  */
 export function setFontSize(fontSize: string) {
-  const fontSizeInput = document.getElementById("fontSize");
-  (fontSizeInput as HTMLInputElement).value = fontSize;
+  getInputElement(DOM_IDS.FONT_SIZE).value = fontSize;
 }
 
 /**
- * @returns Fill color value or null if disabled
+ * @returns Fill color value or empty string if disabled
  */
 export function getFillColor(): string {
-  const checkbox = document.getElementById("fillColorEnabled") as HTMLInputElement;
+  const checkbox = getInputElement(DOM_IDS.FILL_COLOR_ENABLED);
   const enabled = checkbox.checked;
   if (!enabled) return "";
 
-  const fillColorInput = document.getElementById("fillColor") as HTMLInputElement;
-  return fillColorInput.value || "#000000";
+  const fillColorInput = getInputElement(DOM_IDS.FILL_COLOR);
+  return fillColorInput.value || DEFAULTS.FILL_COLOR;
 }
 
 /**
@@ -45,8 +79,8 @@ export function getFillColor(): string {
  * @param color Fill color to set, or null to disable
  */
 export function setFillColor(color: string | null) {
-  const fillColorInput = document.getElementById("fillColor") as HTMLInputElement;
-  const checkbox = document.getElementById("fillColorEnabled") as HTMLInputElement;
+  const fillColorInput = getInputElement(DOM_IDS.FILL_COLOR);
+  const checkbox = getInputElement(DOM_IDS.FILL_COLOR_ENABLED);
 
   if (color) {
     checkbox.checked = true;
@@ -62,146 +96,28 @@ export function setFillColor(color: string | null) {
  * @returns Typst source code from the UI input
  */
 export function getTypstCode(): string {
-  const typstInput = document.getElementById("typstInput") as HTMLInputElement;
-  return typstInput.value;
+  return getAreaElement(DOM_IDS.TYPST_INPUT).value;
 }
 
 /**
  * Sets the Typst code in the UI input.
  */
 export function setTypstCode(typstCode: string) {
-  const typstInput = document.getElementById("typstInput") as HTMLInputElement;
-  typstInput.value = typstCode;
+  getAreaElement(DOM_IDS.TYPST_INPUT).value = typstCode;
 }
 
 /**
  * Updates the button text based on whether a Typst shape is selected.
  */
 export function setButtonText(isEditingExistingFormula: boolean) {
-  const button = document.getElementById("insertBtn") as HTMLButtonElement;
-  button.innerText = isEditingExistingFormula ? "Update (Ctrl+Enter)" : "Insert (Ctrl+Enter)";
+  const button = getHTMLElement(DOM_IDS.INSERT_BTN) as HTMLButtonElement;
+  button.innerText = isEditingExistingFormula ? BUTTON_TEXT.UPDATE : BUTTON_TEXT.INSERT;
 }
 
 /**
  * Enables or disables the insert button.
  */
 export function setButtonEnabled(enabled: boolean) {
-  const button = document.getElementById("insertBtn") as HTMLButtonElement;
+  const button = getHTMLElement(DOM_IDS.INSERT_BTN) as HTMLButtonElement;
   button.disabled = !enabled;
-}
-
-/**
- * Updates the preview panel with compiled SVG.
- */
-export async function updatePreview() {
-  const rawCode = getTypstCode().trim();
-  const fontSize = getFontSize();
-  const previewElement = document.getElementById("previewContent") as HTMLElement;
-
-  if (!rawCode) {
-    previewElement.innerHTML = "";
-    return;
-  }
-
-  let svgOutput: string;
-  try {
-    svgOutput = await typst(rawCode, fontSize);
-  } catch {
-    // TODO: better error handling
-    previewElement.innerText = "";
-    return;
-  }
-
-  const { svgElement: processedSvg } = parseAndApplySize(svgOutput);
-  previewElement.innerHTML = processedSvg.outerHTML;
-  previewElement.style.color = "";
-
-  const svgElement = previewElement.querySelector("svg");
-  if (!svgElement) return;
-
-  svgElement.style.width = "100%";
-  svgElement.style.height = "auto";
-  svgElement.style.maxHeight = "150px";
-
-  const isDarkMode = !document.documentElement.classList.contains("light-mode");
-  const previewFill = isDarkMode ? "#ffffff" : "#000000";
-  applyFillColor(svgElement, previewFill);
-}
-
-/**
- * Sets up event listeners for preview updates.
- */
-export function setupPreviewListeners() {
-  const typstInput = document.getElementById("typstInput") as HTMLInputElement;
-  const fontSizeInput = document.getElementById("fontSize") as HTMLInputElement;
-  const fillColorInput = document.getElementById("fillColor") as HTMLInputElement;
-  const fillColorEnabled = document.getElementById("fillColorEnabled") as HTMLInputElement;
-
-  typstInput.addEventListener("input", () => {
-    void updatePreview();
-  });
-
-  fontSizeInput.addEventListener("input", () => {
-    const fontSize = getFontSize();
-    storeValue("typstFontSize", fontSize);
-    void updatePreview();
-  });
-
-  fillColorInput.addEventListener("input", () => {
-    const fillColor = getFillColor();
-    storeValue("typstFillColor", fillColor);
-    void updatePreview();
-  });
-
-  fillColorEnabled.addEventListener("change", () => {
-    const fillColor = getFillColor();
-    const colorInput = document.getElementById("fillColor") as HTMLInputElement;
-    colorInput.disabled = !fillColorEnabled.checked;
-    storeValue("typstFillColor", fillColor || "disabled");
-    void updatePreview();
-  });
-}
-
-/**
- * Initializes dark mode based on stored preference (defaults to dark mode).
- */
-export function initializeDarkMode() {
-  const darkModeToggle = document.getElementById("darkModeToggle") as HTMLInputElement;
-  const isDarkMode = isDarkModeEnabled();
-
-  darkModeToggle.checked = isDarkMode;
-  applyTheme(isDarkMode);
-}
-
-/**
- * @returns whether dark mode is enabled
- */
-function isDarkModeEnabled(): boolean {
-  const savedTheme = localStorage.getItem("typstTheme");
-  return savedTheme === null ? true : savedTheme === "dark";
-}
-
-/**
- * Applies the theme to the document.
- */
-function applyTheme(isDark: boolean) {
-  const root = document.documentElement;
-  if (isDark) {
-    root.classList.remove("light-mode");
-  } else {
-    root.classList.add("light-mode");
-  }
-}
-
-/**
- * Sets up the dark mode toggle listener.
- */
-export function setupDarkModeToggle() {
-  const darkModeToggle = document.getElementById("darkModeToggle") as HTMLInputElement;
-  darkModeToggle.addEventListener("change", (event) => {
-    const isDark = (event.target as HTMLInputElement).checked;
-    applyTheme(isDark);
-    localStorage.setItem("typstTheme", isDark ? "dark" : "light");
-    void updatePreview();
-  });
 }

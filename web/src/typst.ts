@@ -1,3 +1,10 @@
+/**
+ * Typst.ts integration for compiling and rendering Typst code to SVG.
+ *
+ * This makes use of the typst.ts library by Myriad Dreamin:
+ * https://myriad-dreamin.github.io/typst.ts/
+ */
+
 import type * as typstWeb from "@myriaddreamin/typst.ts";
 import { createTypstCompiler, createTypstRenderer } from "@myriaddreamin/typst.ts";
 import { disableDefaultFontAssets, loadFonts } from "@myriaddreamin/typst.ts/dist/esm/options.init.mjs";
