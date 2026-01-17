@@ -19,7 +19,8 @@ export type TypstShapeInfo = {
   payload: string;
   fontSize: string;
   fillColor: string | null;
-  position: { left: number; top: number } | null;
+  position?: { left: number; top: number };
+  rotation?: number;
   size: { width: number; height: number };
 };
 
@@ -42,6 +43,10 @@ export async function writeShapeProperties(shape: PowerPoint.Shape, info: TypstS
   if (info.position) {
     shape.left = info.position.left;
     shape.top = info.position.top;
+  }
+
+  if (info.rotation) {
+    shape.rotation = info.rotation;
   }
 
   await context.sync();
