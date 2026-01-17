@@ -36,6 +36,9 @@ export const DOM_IDS = {
   DARK_MODE_TOGGLE: "darkModeToggle",
   DIAGNOSTICS_CONTAINER: "diagnosticsContainer",
   DIAGNOSTICS_CONTENT: "diagnosticsContent",
+  FILE_INPUT: "fileInput",
+  GENERATE_FROM_FILE_BTN: "generateFromFileBtn",
+  FILE_PICKER_LABEL: "filePickerLabel",
 } as const;
 
 /**

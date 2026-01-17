@@ -3,6 +3,7 @@ import { initTypst } from "./typst.js";
 import { setupPreviewListeners, updateButtonState } from "./preview.js";
 import { initializeDarkMode, setupDarkModeToggle } from "./theme.js";
 import { handleSelectionChange } from "./selection.js";
+import "./commands.js";
 
 /**
  * Main initialization function for Office Add-in.

@@ -278,6 +278,61 @@ button {
     color: var(--text-secondary);
 }
 
+.file-picker-section {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-primary);
+    padding: 12px 0;
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    z-index: 10;
+}
+
+.file-picker-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    display: none;
+}
+
+.file-picker-label.show {
+    display: block;
+}
+
+.file-picker-label.error-state {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+.file-picker-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.file-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.file-input.error-state {
+    border-color: var(--error-color);
+    border-width: 2px;
+}
+
+#generateFromFileBtn {
+    flex: 1 1 150px;
+    margin-top: 0;
+}
+
 .status {
     margin-top: 10px;
     font-size: 12px;

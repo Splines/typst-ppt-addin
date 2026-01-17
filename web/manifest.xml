@@ -61,6 +61,21 @@
                     <SourceLocation resid="Taskpane.Url" />
                   </Action>
                 </Control>
+                <Control xsi:type="Button" id="BtnGenerateFromFile">
+                  <Label resid="GenerateFromFileButton.Label" />
+                  <Supertip>
+                    <Title resid="GenerateFromFileButton.Label" />
+                    <Description resid="GenerateFromFileButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                     <bt:Image size="16" resid="Icon.16x16" />
+                     <bt:Image size="32" resid="Icon.32x32" />
+                     <bt:Image size="80" resid="Icon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>generateFromFile</FunctionName>
+                  </Action>
+                </Control>
               </Group>
             </OfficeTab>
           </ExtensionPoint>
@@ -81,10 +96,12 @@
         <bt:String id="GetStarted.Title" DefaultValue="Get started with Typst!" />
         <bt:String id="Group.Label" DefaultValue="Typst" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="Typst Editor" />
+        <bt:String id="GenerateFromFileButton.Label" DefaultValue="Generate from File" />
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="This add-in allows you to create and edit Typst equations." />
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click into the Typst editor task pane!" />
+        <bt:String id="GenerateFromFileButton.Tooltip" DefaultValue="Generate Typst formula from an external file" />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
