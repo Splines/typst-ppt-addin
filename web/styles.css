@@ -34,16 +34,20 @@ body {
     transition: background 0.2s, color 0.2s;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 12px 0;
+}
+
 /* https://codepen.io/fydsa/pen/abwdpep */
 #themeToggle {
-    --light: #d8dbe0;
+    --light: #E5E7EB;
     --dark: #28292c;
+    --toggle-width: 40px;
 
     position: relative;
-    width: 200px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
+    width: var(--toggle-width);
 
     input {
         position: absolute;
@@ -53,9 +57,9 @@ body {
     label {
         position: absolute;
         width: 100%;
-        height: 100px;
+        height: calc(var(--toggle-width) * 0.5);
         background-color: var(--dark);
-        border-radius: 50px;
+        border-radius: calc(var(--toggle-width) * 0.25);
         cursor: pointer;
     }
 
@@ -64,8 +68,8 @@ body {
     }
 
     input:checked~.slider::before {
-        transform: translateX(95px);
-        background-color: var(--dark);
+        transform: translateX(calc(var(--toggle-width) * 0.475));
+        background-color: white;
         box-shadow: none;
     }
 
@@ -73,18 +77,18 @@ body {
         position: absolute;
         width: 100%;
         height: 100%;
-        border-radius: 50px;
+        border-radius: calc(var(--toggle-width) * 0.25);
         transition: 0.3s;
 
         &::before {
             content: "";
             position: absolute;
-            top: 13px;
-            left: 16px;
-            width: 75px;
-            height: 75px;
+            top: calc(var(--toggle-width) * 0.065);
+            left: calc(var(--toggle-width) * 0.08);
+            width: calc(var(--toggle-width) * 0.375);
+            height: calc(var(--toggle-width) * 0.375);
             border-radius: 50%;
-            box-shadow: inset 28px -4px 0px 0px var(--light);
+            box-shadow: inset calc(var(--toggle-width) * 0.14) calc(var(--toggle-width) * -0.02) 0px 0px var(--light);
             background-color: var(--dark);
             transition: 0.3s;
         }
