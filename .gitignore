@@ -1,4 +1,4 @@
-engine/target/
 node_modules/
-web/certs/
-demo/
+web/certs/*
+!web/certs/.gitkeep 
+build/
