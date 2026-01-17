@@ -4,7 +4,7 @@ import { typst } from "./typst.js";
 import { setStatus, getFontSize, getFillColor, getTypstCode } from "./ui.js";
 import { isTypstPayload, createTypstPayload } from "./payload.js";
 import { storeValue } from "./utils/storage.js";
-import { lastTypstForm, tagShape, TypstForm } from "./shape.js";
+import { lastTypstShapeId, tagShape } from "./shape.js";
 import { STORAGE_KEYS } from "./constants.js";
 
 /**
@@ -17,10 +17,11 @@ async function findTypstShape(selectedShapes: PowerPoint.Shape[], allSlides: Pow
   );
   if (typstShape) return typstShape;
 
-  if (!lastTypstForm) return undefined;
+  if (!lastTypstShapeId) return undefined;
+  const id = lastTypstShapeId;
 
   try {
-    const targetSlide = allSlides.find(slide => slide.id === (lastTypstForm as TypstForm).slideId) || allSlides[0];
+    const targetSlide = allSlides.find(slide => slide.id === id.slideId) || allSlides[0];
     if (targetSlide.isNullObject) return undefined;
 
     targetSlide.shapes.load("items");
@@ -33,7 +34,7 @@ async function findTypstShape(selectedShapes: PowerPoint.Shape[], allSlides: Pow
     );
     await context.sync();
 
-    return targetSlide.shapes.items.find(shape => shape.id === (lastTypstForm as TypstForm).shapeId);
+    return targetSlide.shapes.items.find(shape => shape.id === id.shapeId);
   } catch (error) {
     debug("Fallback to last selection failed:", error);
     return undefined;

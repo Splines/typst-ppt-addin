@@ -1,22 +1,18 @@
 import { SHAPE_CONFIG, FILL_COLOR_DISABLED } from "./constants.js";
 import { debug } from "./utils/logger.js";
 
-export type TypstForm = {
+export type TypstShapeId = {
   slideId: string | null;
   shapeId: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
 };
 
-export let lastTypstForm: TypstForm | null;
+export let lastTypstShapeId: TypstShapeId | null;
 
 /**
- * Updates the last selected Typst shape information.
+ * Updates the last Typst shape identifier.
  */
-export function setLastSelectedTypstForm(selection: TypstForm | null) {
-  lastTypstForm = selection;
+export function setLastTypstId(info: TypstShapeId | null) {
+  lastTypstShapeId = info;
 }
 
 /**
