@@ -1,7 +1,7 @@
 import { DOM_IDS, DEFAULTS, BUTTON_TEXT, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
 import { getInputElement, getHTMLElement, getAreaElement } from "./utils/dom.js";
-import { getStoredValue } from "./state.js";
 import { insertOrUpdateFormula } from "./powerpoint.js";
+import { getStoredValue } from "./utils/storage.js";
 
 /**
  * Initializes the UI state.
@@ -120,4 +120,22 @@ export function setButtonText(isEditingExistingFormula: boolean) {
 export function setButtonEnabled(enabled: boolean) {
   const button = getHTMLElement(DOM_IDS.INSERT_BTN) as HTMLButtonElement;
   button.disabled = !enabled;
+}
+
+export type TypstForm = {
+  slideId: string | null;
+  shapeId: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
+export let lastTypstForm: TypstForm | null;
+
+/**
+ * Updates the last selected Typst shape information.
+ */
+export function setLastSelectedTypstForm(selection: TypstForm | null) {
+  lastTypstForm = selection;
 }

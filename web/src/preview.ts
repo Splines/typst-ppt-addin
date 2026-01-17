@@ -1,9 +1,9 @@
 import { typst } from "./typst.js";
-import { storeValue } from "./state.js";
 import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { DOM_IDS, PREVIEW_CONFIG, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
 import { getAreaElement, getHTMLElement, getInputElement } from "./utils/dom";
 import { getFillColor, getFontSize, getTypstCode } from "./ui";
+import { storeValue } from "./utils/storage.js";
 
 /**
  * Sets up event listeners for preview updates.

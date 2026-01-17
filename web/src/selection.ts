@@ -1,8 +1,7 @@
 import { FILL_COLOR_DISABLED, SHAPE_CONFIG, DEFAULTS } from "./constants";
 import { extractTypstCode, isTypstPayload } from "./payload";
 import { updatePreview } from "./preview";
-import { setLastTypstForm } from "./state";
-import { setButtonText, setFillColor, setFontSize, setStatus, setTypstCode } from "./ui";
+import { setButtonText, setFillColor, setFontSize, setLastSelectedTypstForm, setStatus, setTypstCode } from "./ui";
 import { debug } from "./utils/logger";
 
 /**
@@ -24,7 +23,7 @@ export async function handleSelectionChange() {
     }
 
     if (shapes.items.length === 0) {
-      setLastTypstForm(null);
+      setLastSelectedTypstForm(null);
       setButtonText(false);
       return;
     }
@@ -38,7 +37,7 @@ export async function handleSelectionChange() {
       await loadTypstShape(typstShape, slideId, context);
       setButtonText(true);
     } else {
-      setLastTypstForm(null);
+      setLastSelectedTypstForm(null);
       setButtonText(false);
     }
   });
@@ -67,7 +66,7 @@ async function loadTypstShape(typstShape: PowerPoint.Shape, slideId: string | nu
 
     setFillColor(fillColorToSet);
     setTypstCode(typstCode);
-    setLastTypstForm({
+    setLastSelectedTypstForm({
       slideId,
       shapeId: typstShape.id,
       left: typstShape.left,
