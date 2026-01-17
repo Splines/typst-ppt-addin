@@ -111,11 +111,13 @@ export async function insertOrUpdateFormula() {
       await context.sync();
 
       let position: { left: number; top: number } | null = null;
+      let rotation: number | undefined;
       let isReplacing = false;
 
       const typstShape = await findTypstShape(selection.items, allSlides.items, context);
       if (typstShape) {
         position = calculateCenteredPosition(typstShape, prepared.size);
+        rotation = typstShape.rotation;
         typstShape.delete();
         isReplacing = true;
         await context.sync();
@@ -130,6 +132,7 @@ export async function insertOrUpdateFormula() {
         fillColor: fillColor || null,
         position,
         size: prepared.size,
+        rotation,
       }, targetSlide.id, existingShapeIds);
 
       if (!insertedShape) {
@@ -247,6 +250,7 @@ export async function bulkUpdateFontSize() {
           }
 
           const position = calculateCenteredPosition(shape, prepared.size);
+          const rotation = shape.rotation;
 
           // Capture slide and existing shapes before deletion
           const parentSlide = shape.getParentSlide();
@@ -265,6 +269,7 @@ export async function bulkUpdateFontSize() {
             fillColor,
             position,
             size: prepared.size,
+            rotation,
           }, slideId, existingShapeIds);
 
           if (insertedShape) {

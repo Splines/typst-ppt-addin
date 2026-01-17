@@ -18,7 +18,8 @@ export async function handleSelectionChange() {
 
     if (shapes.items.length > 0) {
       shapes.items.forEach(shape =>
-        shape.load(["id", "altTextDescription", "left", "top", "width", "height", "tags"]),
+        shape.load(["id", "altTextDescription", "left", "top",
+          "width", "height", "rotation", "tags"]),
       );
       await context.sync();
     }
