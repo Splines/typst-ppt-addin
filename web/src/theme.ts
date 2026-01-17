@@ -6,9 +6,8 @@ import { DOM_IDS, STORAGE_KEYS, THEMES } from "./constants.js";
  * Initializes dark mode based on stored preference (defaults to light mode).
  */
 export function initializeDarkMode() {
-  const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
   const isDarkMode = isDarkModeEnabled();
-
+  const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
   darkModeToggle.checked = !isDarkMode;
   applyTheme(isDarkMode);
 }
