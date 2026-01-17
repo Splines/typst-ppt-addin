@@ -6,7 +6,7 @@
  * PowerPoint shape configuration.
  */
 export const SHAPE_CONFIG = {
-  NAME: "Typst Equation",
+  NAME: "Typst Shape",
   TAGS: {
     FONT_SIZE: "TypstFontSize",
     FILL_COLOR: "TypstFillColor",
@@ -71,14 +71,14 @@ export const PREVIEW_CONFIG = {
  * Button text.
  */
 export const BUTTON_TEXT = {
-  INSERT: "Insert (Ctrl+Enter)",
-  UPDATE: "Update (Ctrl+Enter)",
+  INSERT: "Insert <kbd>Ctrl+Enter</kbd>",
+  UPDATE: "Update <kbd>Ctrl+Enter</kbd>",
 } as const;
 
 /**
  * Default values.
  */
 export const DEFAULTS = {
-  FONT_SIZE: "20",
+  FONT_SIZE: "40",
   FILL_COLOR: "#000000",
 } as const;

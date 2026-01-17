@@ -1,17 +1,4 @@
 :root {
-    --bg-primary: #1e1e1e;
-    --bg-secondary: #2d2d2d;
-    --bg-tertiary: #252525;
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --border-color: #404040;
-    --button-bg: #0078d4;
-    --button-hover: #005a9e;
-    --button-disabled: #555;
-    --error-color: #f48771;
-}
-
-:root.light-mode {
     --bg-primary: #f4f4f4;
     --bg-secondary: #ffffff;
     --bg-tertiary: #ffffff;
@@ -22,6 +9,19 @@
     --button-hover: #005a9e;
     --button-disabled: #aaaaaa;
     --error-color: #b00020;
+
+    &.dark-mode {
+        --bg-primary: #1e1e1e;
+        --bg-secondary: #2d2d2d;
+        --bg-tertiary: #252525;
+        --text-primary: #e0e0e0;
+        --text-secondary: #b0b0b0;
+        --border-color: #404040;
+        --button-bg: #0078d4;
+        --button-hover: #005a9e;
+        --button-disabled: #555;
+        --error-color: #f48771;
+    }
 }
 
 body {
@@ -30,109 +30,147 @@ body {
     font-family: sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    min-width: 320px;
-    /* eslint-disable-next-line css/use-baseline */
-    zoom: 115%;
+    zoom: 114%;
     transition: background 0.2s, color 0.2s;
 }
 
-.theme-toggle {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 12px 0;
 }
 
-.theme-toggle label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text-primary);
-    /* eslint-disable-next-line css/use-baseline */
-    user-select: none;
+/* https://codepen.io/fydsa/pen/abwdpep */
+#themeToggle {
+    --light: #E5E7EB;
+    --dark: #28292c;
+    --toggle-width: 40px;
+
+    position: relative;
+    width: var(--toggle-width);
+
+    input {
+        position: absolute;
+        display: none;
+    }
+
+    label {
+        position: absolute;
+        width: 100%;
+        height: calc(var(--toggle-width) * 0.5);
+        background-color: var(--dark);
+        border-radius: calc(var(--toggle-width) * 0.25);
+        cursor: pointer;
+    }
+
+    .slider {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: calc(var(--toggle-width) * 0.240);
+        transition: 0.3s;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: calc(var(--toggle-width) * 0.065);
+            left: calc(var(--toggle-width) * 0.08);
+            width: calc(var(--toggle-width) * 0.375);
+            height: calc(var(--toggle-width) * 0.375);
+            border-radius: 50%;
+            box-shadow: inset calc(var(--toggle-width) * 0.14) calc(var(--toggle-width) * -0.02) 0px 0px var(--light);
+            background-color: var(--dark);
+            transition: 0.3s;
+        }
+    }
 }
 
-.theme-toggle input[type="checkbox"] {
-    margin-right: 8px;
-    cursor: pointer;
-    width: 16px;
-    height: 16px;
+input:checked~.slider {
+    background-color: var(--light);
+}
+
+input:checked~.slider::before {
+    transform: translateX(calc(var(--toggle-width) * 0.475));
+    background-color: white;
+    box-shadow: none;
+    border: 1px solid lightgray;
+    top: calc(var(--toggle-width) * 0.066 - 1px);
 }
 
 .controls {
     display: flex;
-    align-items: center;
-    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
     font-size: 13px;
-    color: var(--text-primary);     
-}
-
-.controls label {
-    margin-right: 8px;
-    font-weight: 600;
-}
-
-.controls label:not(:first-child) {
-    margin-left: 12px;
-}
-
-.controls input[type="number"] {
-    width: 60px;
-    padding: 4px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--bg-secondary);
     color: var(--text-primary);
+
+    label {
+        font-weight: 600;
+    }
+
+    input[type="number"] {
+        width: 40px;
+        padding: 4px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+
+    input[type="color"] {
+        width: 40px;
+        height: 28px;
+        padding: 2px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-secondary);
+        cursor: pointer;
+    }
 }
 
-.controls input[type="color"] {
-    width: 40px;
-    height: 28px;
-    padding: 2px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    cursor: pointer;
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .fill-color-group {
     display: flex;
     align-items: center;
     gap: 8px;
-}
 
-.fill-color-group label {
-    display: flex;
-    align-items: center;
-    margin: 0;
-}
+    label {
+        display: flex;
+        align-items: center;
+        margin: 0;
+    }
 
-.fill-color-group input[type="checkbox"] {
-    margin-right: 4px;
-    cursor: pointer;
-    width: 16px;
-    height: 16px;
-}
+    input[type="checkbox"] {
+        margin: 0 4px 0 0;
+        cursor: pointer;
+        width: 16px;
+        height: 16px;
+    }
 
-.fill-color-group input[type="color"]:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    input[type="color"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }
 
 textarea {
     width: 100%;
-    height: 180px;
+    height: 120px;
     box-sizing: border-box;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
+    font-family: "Courier New", monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    /* eslint-disable-next-line css/use-baseline */
     resize: vertical;
 }
 
@@ -146,15 +184,31 @@ button {
     border-radius: 2px;
     cursor: pointer;
     font-weight: bold;
+
+    &:hover {
+        background: var(--button-hover);
+    }
+
+    &:disabled {
+        background: var(--button-disabled);
+        cursor: not-allowed;
+    }
+
+    kbd {
+        font-family: "Courier New", monospace;
+        font-size: 0.85em;
+        padding: 2px 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        font-weight: bold;
+    }
 }
 
-button:hover {
-    background: var(--button-hover);
-}
-
-button:disabled {
-    background: var(--button-disabled);
-    cursor: not-allowed;
+#insertBtn {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
 }
 
 .footer {
@@ -167,10 +221,10 @@ button:disabled {
     margin-top: 10px;
     font-size: 12px;
     color: var(--text-primary);
-}
 
-.status.error {
-    color: var(--error-color);
+    &.error {
+        color: var(--error-color);
+    }
 }
 
 #previewContainer {
@@ -180,4 +234,9 @@ button:disabled {
     min-height: 50px;
     background: var(--bg-secondary);
     text-align: center;
+}
+
+#spaceBelow {
+    display: block;
+    height: 5em;
 }

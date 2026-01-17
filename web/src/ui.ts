@@ -1,5 +1,5 @@
 import { DOM_IDS, DEFAULTS, BUTTON_TEXT, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
-import { getInputElement, getHTMLElement, getAreaElement } from "./utils/dom.js";
+import { getInputElement, getHTMLElement, getAreaElement, getButtonElement } from "./utils/dom.js";
 import { insertOrUpdateFormula } from "./insertion.js";
 import { getStoredValue } from "./utils/storage.js";
 
@@ -22,20 +22,21 @@ export function initializeUIState() {
  * Sets up event listeners for UI interactions.
  */
 export function setupEventListeners() {
-  const insertButton = document.getElementById(DOM_IDS.INSERT_BTN);
-  if (insertButton) {
-    insertButton.onclick = insertOrUpdateFormula;
-  }
+  const insertButton = getButtonElement(DOM_IDS.INSERT_BTN);
+  insertButton.onclick = insertOrUpdateFormula;
 
-  const typstInput = document.getElementById(DOM_IDS.TYPST_INPUT);
-  if (typstInput) {
-    typstInput.addEventListener("keydown", (event) => {
-      if (event.ctrlKey && event.key === "Enter") {
-        event.preventDefault();
-        void insertOrUpdateFormula();
-      }
-    });
-  }
+  const handleCtrlEnter = (event: KeyboardEvent) => {
+    if (event.ctrlKey && event.key === "Enter") {
+      event.preventDefault();
+      void insertOrUpdateFormula();
+    }
+  };
+
+  const typstInput = getAreaElement(DOM_IDS.TYPST_INPUT);
+  typstInput.addEventListener("keydown", handleCtrlEnter);
+
+  const fontSizeInput = getInputElement(DOM_IDS.FONT_SIZE);
+  fontSizeInput.addEventListener("keydown", handleCtrlEnter);
 }
 
 /**
@@ -111,7 +112,7 @@ export function setTypstCode(typstCode: string) {
  */
 export function setButtonText(isEditingExistingFormula: boolean) {
   const button = getHTMLElement(DOM_IDS.INSERT_BTN) as HTMLButtonElement;
-  button.innerText = isEditingExistingFormula ? BUTTON_TEXT.UPDATE : BUTTON_TEXT.INSERT;
+  button.innerHTML = isEditingExistingFormula ? BUTTON_TEXT.UPDATE : BUTTON_TEXT.INSERT;
 }
 
 /**

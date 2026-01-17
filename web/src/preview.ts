@@ -72,7 +72,7 @@ export async function updatePreview() {
   svgElement.style.height = "auto";
   svgElement.style.maxHeight = PREVIEW_CONFIG.MAX_HEIGHT;
 
-  const isDarkMode = !document.documentElement.classList.contains("light-mode");
+  const isDarkMode = document.documentElement.classList.contains("dark-mode");
   const previewFill = isDarkMode ? PREVIEW_CONFIG.DARK_MODE_FILL : PREVIEW_CONFIG.LIGHT_MODE_FILL;
   applyFillColor(svgElement, previewFill);
 }

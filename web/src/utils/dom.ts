@@ -37,6 +37,13 @@ export function getInputElement(id: string): HTMLInputElement {
 }
 
 /**
+ * Gets an HTMLButtonElement by ID.
+ */
+export function getButtonElement(id: string): HTMLButtonElement {
+  return getElement(id, HTMLButtonElement);
+}
+
+/**
  * Gets a generic HTMLElement by ID.
  */
 export function getHTMLElement(id: string): HTMLElement {

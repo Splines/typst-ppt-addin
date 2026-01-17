@@ -1,16 +1,16 @@
 import css from "@eslint/css";
 import eslint from "@eslint/js";
 import html from "@html-eslint/eslint-plugin";
-import htmlParser, { TEMPLATE_ENGINE_SYNTAX } from "@html-eslint/parser";
 import stylistic from "@stylistic/eslint-plugin";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 
 const customGlobals = {
   PowerPoint: "readonly",
 };
 
-export default tseslint.config(
+export default defineConfig([
     {
         // Globally ignore the following paths
         ignores: [
@@ -105,5 +105,11 @@ export default tseslint.config(
         plugins: { css },
         language: "css/css",
         extends: [css.configs.recommended],
+        rules: {
+            "css/use-baseline": ["error", {
+                allowSelectors: ["nesting"],
+                allowProperties: ["user-select", "zoom", "resize"]
+            }],
+        }
     },
-);
+]);

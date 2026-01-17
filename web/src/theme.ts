@@ -3,13 +3,12 @@ import { getInputElement } from "./utils/dom";
 import { DOM_IDS, STORAGE_KEYS, THEMES } from "./constants.js";
 
 /**
- * Initializes dark mode based on stored preference (defaults to dark mode).
+ * Initializes dark mode based on stored preference (defaults to light mode).
  */
 export function initializeDarkMode() {
-  const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
   const isDarkMode = isDarkModeEnabled();
-
-  darkModeToggle.checked = isDarkMode;
+  const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
+  darkModeToggle.checked = !isDarkMode;
   applyTheme(isDarkMode);
 }
 
@@ -18,7 +17,7 @@ export function initializeDarkMode() {
  */
 function isDarkModeEnabled(): boolean {
   const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
-  return savedTheme === null ? true : savedTheme === THEMES.DARK;
+  return savedTheme === null ? false : savedTheme === THEMES.DARK;
 }
 
 /**
@@ -27,9 +26,9 @@ function isDarkModeEnabled(): boolean {
 function applyTheme(isDark: boolean) {
   const root = document.documentElement;
   if (isDark) {
-    root.classList.remove("light-mode");
+    root.classList.add("dark-mode");
   } else {
-    root.classList.add("light-mode");
+    root.classList.remove("dark-mode");
   }
 }
 
@@ -39,7 +38,7 @@ function applyTheme(isDark: boolean) {
 export function setupDarkModeToggle() {
   const darkModeToggle = getInputElement(DOM_IDS.DARK_MODE_TOGGLE);
   darkModeToggle.addEventListener("change", (event) => {
-    const isDark = (event.target as HTMLInputElement).checked;
+    const isDark = !(event.target as HTMLInputElement).checked;
     applyTheme(isDark);
     localStorage.setItem(STORAGE_KEYS.THEME, isDark ? THEMES.DARK : THEMES.LIGHT);
     void updatePreview();
