@@ -1,6 +1,6 @@
 import { FILL_COLOR_DISABLED, SHAPE_CONFIG, DEFAULTS } from "./constants.js";
 import { extractTypstCode, isTypstPayload } from "./payload.js";
-import { updatePreview } from "./preview.js";
+import { updatePreview, updateButtonState } from "./preview.js";
 import { readShapeTag, setLastTypstId } from "./shape.js";
 import { setButtonText, setFillColor, setFontSize, setStatus, setTypstCode, setBulkUpdateButtonVisible } from "./ui.js";
 import { debug } from "./utils/logger.js";
@@ -80,6 +80,7 @@ async function loadTypstShape(typstShape: PowerPoint.Shape, slideId: string | nu
     setTypstCode(typstCode);
     setLastTypstId({ slideId, shapeId: typstShape.id });
 
+    updateButtonState();
     void updatePreview();
   } catch (error) {
     console.error("Decode error:", error);

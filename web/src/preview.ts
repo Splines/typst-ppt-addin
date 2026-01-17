@@ -2,7 +2,7 @@ import { typst } from "./typst.js";
 import { applyFillColor, parseAndApplySize } from "./svg.js";
 import { DOM_IDS, PREVIEW_CONFIG, STORAGE_KEYS, FILL_COLOR_DISABLED } from "./constants.js";
 import { getAreaElement, getHTMLElement, getInputElement } from "./utils/dom";
-import { getFillColor, getFontSize, getTypstCode } from "./ui";
+import { getFillColor, getFontSize, getTypstCode, setButtonEnabled } from "./ui";
 import { storeValue } from "./utils/storage.js";
 
 /**
@@ -15,6 +15,7 @@ export function setupPreviewListeners() {
   const fillColorEnabled = getInputElement(DOM_IDS.FILL_COLOR_ENABLED);
 
   typstInput.addEventListener("input", () => {
+    updateButtonState();
     void updatePreview();
   });
 
@@ -75,4 +76,12 @@ export async function updatePreview() {
   const isDarkMode = document.documentElement.classList.contains("dark-mode");
   const previewFill = isDarkMode ? PREVIEW_CONFIG.DARK_MODE_FILL : PREVIEW_CONFIG.LIGHT_MODE_FILL;
   applyFillColor(svgElement, previewFill);
+}
+
+/**
+ * Updates the insert button enabled state based on whether there's input.
+ */
+export function updateButtonState() {
+  const rawCode = getTypstCode().trim();
+  setButtonEnabled(rawCode.length > 0);
 }

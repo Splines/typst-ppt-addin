@@ -1,6 +1,6 @@
 import { initializeUIState, setupEventListeners } from "./ui.js";
 import { initTypst } from "./typst.js";
-import { setupPreviewListeners } from "./preview.js";
+import { setupPreviewListeners, updateButtonState } from "./preview.js";
 import { initializeDarkMode, setupDarkModeToggle } from "./theme.js";
 import { handleSelectionChange } from "./selection.js";
 
@@ -20,6 +20,7 @@ await Office.onReady(async (info) => {
   initializeUIState();
   setupEventListeners();
   setupPreviewListeners();
+  updateButtonState();
 
   Office.context.document.addHandlerAsync(
     Office.EventType.DocumentSelectionChanged,
