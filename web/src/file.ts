@@ -195,12 +195,10 @@ export function initializeDropzone() {
     const fileInfo = getHTMLElement("fileInfo");
     const fileName = getHTMLElement("fileName");
     const fileMeta = getHTMLElement("fileMeta");
-    const dropzoneLabel = getHTMLElement("dropzoneLabel");
 
     fileName.textContent = lastFilePath;
     fileMeta.textContent = "Previously used";
     fileInfo.classList.add("show");
-    dropzoneLabel.style.display = "none";
   }
 }
 
