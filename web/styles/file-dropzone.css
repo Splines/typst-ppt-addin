@@ -96,24 +96,13 @@
     opacity: 0.7;
 }
 
-.file-details {
-    flex: 1;
-    min-width: 0;
-}
-
-.file-name {
+#fileName {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.file-meta {
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 2px;
 }
 
 #generateFromFileBtn {

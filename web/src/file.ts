@@ -44,9 +44,6 @@ function updateFileUI(file: File) {
   const fileName = getHTMLElement("fileName");
   fileName.textContent = file.name;
 
-  const fileMeta = getHTMLElement("fileMeta");
-  fileMeta.textContent = "Selected";
-
   const dropzoneLabel = getHTMLElement("dropzoneLabel");
   dropzoneLabel.style.borderColor = "";
 
@@ -243,7 +240,6 @@ export async function handleGenerateFromFile() {
   }
 
   try {
-    // Prefer FileSystemFileHandle for fresh content from disk
     let content: string;
     let fileName: string;
 
@@ -265,7 +261,6 @@ export async function handleGenerateFromFile() {
     // since external files typically include their own $ delimiters
     const previousMathMode = getMathModeEnabled();
     setMathModeEnabled(false);
-
     try {
       await insertOrUpdateFormula();
     } finally {
@@ -273,23 +268,24 @@ export async function handleGenerateFromFile() {
       setMathModeEnabled(previousMathMode);
     }
   } catch (error) {
-    // Handle specific error when file can't be read (common with File objects when file changes)
-    if (error instanceof DOMException && error.name === "NotReadableError") {
-      setStatus("File has changed on disk. Please select the file again.", true);
-      fileHandle = null;
-      selectedFile = null;
-      getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN).style.display = "none";
-      const fileInfo = getHTMLElement("fileInfo");
-      fileInfo.classList.remove("show");
-      return;
-    }
-
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    setStatus(`Error reading file: ${error}`, true);
-    // Clear the file handle and selected file if no longer accessible
+    let statusMsg = `Error reading file: ${error}`;
+    if (error instanceof DOMException) {
+      if (error.name === "NotReadableError") {
+        statusMsg = "Cannot automatically reload a file that has changed on disk."
+          + " Please select the file again. (This is a limitation only on macOS"
+          + " since Safari doesn't support the new File System API yet.)";
+      } else if (error.name === "NotFoundError") {
+        statusMsg = "File couldn't be found on disk anymore. Please select your file again.";
+      }
+    }
+    setStatus(statusMsg, true);
+
     fileHandle = null;
     selectedFile = null;
     getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN).style.display = "none";
+    const fileInfo = getHTMLElement("fileInfo");
+    fileInfo.classList.remove("show");
   }
 }
 
