@@ -1,5 +1,5 @@
 > [!Important]
-> This is the old Readme, that will become the new developer guide. It is currently outdated while the first PoC is being improved on to then ship the PowerPoint Add-in to the Marketplace. Expect a first release mid-February.
+> This is the old Readme that will become the new developer guide. It is currently outdated.
 
 # PoC: Typst PowerPoint Add-in
 
