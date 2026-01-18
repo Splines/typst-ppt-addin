@@ -2,7 +2,7 @@ import { insertOrUpdateFormula } from "./insertion.js";
 import { setStatus, setTypstCode, getMathModeEnabled, setMathModeEnabled } from "./ui.js";
 import { DOM_IDS, STORAGE_KEYS } from "./constants.js";
 import { getButtonElement, getHTMLElement } from "./utils/dom.js";
-import { storeValue, getStoredValue } from "./utils/storage.js";
+import { storeValue } from "./utils/storage.js";
 
 // Store the file handle (if available) for fresh reads from disk
 let fileHandle: FileSystemFileHandle | null = null;
@@ -223,18 +223,6 @@ export function initializeDropzone() {
       e.preventDefault();
     }
   });
-
-  // Try to show last used file
-  const lastFilePath = getStoredValue(STORAGE_KEYS.LAST_FILE_PATH as string);
-  if (lastFilePath) {
-    const fileInfo = getHTMLElement("fileInfo");
-    const fileName = getHTMLElement("fileName");
-    const fileMeta = getHTMLElement("fileMeta");
-
-    fileName.textContent = lastFilePath;
-    fileMeta.textContent = "Previously used";
-    fileInfo.classList.add("show");
-  }
 }
 
 /**
@@ -291,6 +279,8 @@ export async function handleGenerateFromFile() {
       fileHandle = null;
       selectedFile = null;
       getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN).style.display = "none";
+      const fileInfo = getHTMLElement("fileInfo");
+      fileInfo.classList.remove("show");
       return;
     }
 
