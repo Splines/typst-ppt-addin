@@ -4,8 +4,10 @@ import { DOM_IDS, STORAGE_KEYS } from "./constants.js";
 import { getButtonElement, getHTMLElement } from "./utils/dom.js";
 import { storeValue, getStoredValue } from "./utils/storage.js";
 
-// Store the file handle in memory
+// Store the file handle (if available) for fresh reads from disk
 let fileHandle: FileSystemFileHandle | null = null;
+// Fallback to File object for drag-and-drop without handle support
+let selectedFile: File | null = null;
 
 // Extend Window and FileSystemHandle interfaces to include File System Access API
 declare global {
@@ -23,6 +25,10 @@ declare global {
     queryPermission(_descriptor?: { mode: "read" | "readwrite" }): Promise<PermissionState>;
     requestPermission(_descriptor?: { mode: "read" | "readwrite" }): Promise<PermissionState>;
   }
+
+  interface DataTransferItem {
+    getAsFileSystemHandle(): Promise<FileSystemFileHandle | FileSystemDirectoryHandle>;
+  }
 }
 
 /**
@@ -33,31 +39,28 @@ function updateFileUI(file: File) {
   const fileInfo = getHTMLElement("fileInfo");
   const fileName = getHTMLElement("fileName");
   const fileMeta = getHTMLElement("fileMeta");
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
 
-  // Update file info
   fileName.textContent = file.name;
-  fileMeta.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+  fileMeta.textContent = "Selected";
 
-  // Show file info and hide dropzone label
   fileInfo.classList.add("show");
-  dropzoneLabel.style.display = "none";
   generateBtn.style.display = "block";
 
-  // Store file name for display
   storeValue(STORAGE_KEYS.LAST_FILE_PATH as string, file.name);
 }
 
 /**
  * Processes a selected file (from either picker or drop).
  */
-function processFile(file: File): void {
+function processFile(file: File, handle?: FileSystemFileHandle): void {
   // Check if it's a valid file type
   if (!file.name.endsWith(".typ") && !file.name.endsWith(".txt")) {
     setStatus("Please select a .typ or .txt file", true);
     return;
   }
 
+  fileHandle = handle || null;
+  selectedFile = file;
   updateFileUI(file);
   setStatus(`Selected: ${file.name}`);
 }
@@ -81,9 +84,9 @@ async function pickFile(): Promise<void> {
     });
 
     if (handles.length > 0) {
-      fileHandle = handles[0];
-      const file = await fileHandle.getFile();
-      updateFileUI(file);
+      const handle = handles[0];
+      const file = await handle.getFile();
+      processFile(file, handle);
     }
   } catch (error) {
     // User cancelled or error occurred
@@ -142,7 +145,7 @@ function handleDragLeave(event: DragEvent) {
 /**
  * Handles drop event.
  */
-function handleDrop(event: DragEvent) {
+async function handleDrop(event: DragEvent) {
   event.preventDefault();
 
   const dropzoneLabel = getHTMLElement("dropzoneLabel");
@@ -150,12 +153,30 @@ function handleDrop(event: DragEvent) {
 
   if (!event.dataTransfer?.items) return;
 
-  const files = Array.from(event.dataTransfer.items)
-    .map(item => item.getAsFile())
-    .filter((file): file is File => file !== null);
+  // Try to get FileSystemFileHandle if supported
+  const items = Array.from(event.dataTransfer.items);
+  const fileItem = items.find(item => item.kind === "file");
 
-  if (files.length > 0) {
-    processFile(files[0]);
+  if (!fileItem) return;
+
+  try {
+    // Try to get FileSystemFileHandle (if supported)
+    if ("getAsFileSystemHandle" in fileItem) {
+      const handle = await fileItem.getAsFileSystemHandle();
+      if (handle.kind === "file") {
+        const file = await handle.getFile();
+        processFile(file, handle);
+        return;
+      }
+    }
+  } catch {
+    // FileSystemFileHandle not supported, fallback to File object
+  }
+
+  // Fallback to regular File object
+  const file = fileItem.getAsFile();
+  if (file) {
+    processFile(file);
   }
 }
 
@@ -170,7 +191,9 @@ export function initializeDropzone() {
 
   dropzoneLabel.addEventListener("dragover", handleDragOver);
   dropzoneLabel.addEventListener("dragleave", handleDragLeave);
-  dropzoneLabel.addEventListener("drop", handleDrop);
+  dropzoneLabel.addEventListener("drop", (event) => {
+    void handleDrop(event);
+  });
 
   // Prevent default drag behavior on window
   window.addEventListener("dragover", (e) => {
@@ -214,18 +237,29 @@ export function handleFileSelection() {
  * Handles generating formula from the selected file.
  */
 export async function handleGenerateFromFile() {
-  if (!fileHandle) {
+  if (!fileHandle && !selectedFile) {
     setStatus("Please select a file first", true);
     return;
   }
 
   try {
-    // Read the file fresh from disk each time
-    const file = await fileHandle.getFile();
-    const content = await file.text();
+    // Prefer FileSystemFileHandle for fresh content from disk
+    let content: string;
+    let fileName: string;
+
+    if (fileHandle) {
+      const file = await fileHandle.getFile();
+      content = await file.text();
+      fileName = file.name;
+    } else if (selectedFile) {
+      content = await selectedFile.text();
+      fileName = selectedFile.name;
+    } else {
+      return; // Should never happen due to check above
+    }
 
     setTypstCode(content);
-    setStatus(`Loaded content from ${file.name}`);
+    setStatus(`Loaded content from ${fileName}`);
 
     // Temporarily disable math mode for file generation
     // since external files typically include their own $ delimiters
@@ -241,8 +275,9 @@ export async function handleGenerateFromFile() {
   } catch (error) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     setStatus(`Error reading file: ${error}`, true);
-    // Clear the file handle if it's no longer accessible
+    // Clear the file handle and selected file if no longer accessible
     fileHandle = null;
+    selectedFile = null;
     getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN).style.display = "none";
   }
 }
@@ -263,7 +298,7 @@ export function showFilePickerError() {
  */
 export async function generateFromFile(event: Office.AddinCommands.Event) {
   try {
-    if (!fileHandle) {
+    if (!fileHandle && !selectedFile) {
       await Office.addin.showAsTaskpane();
       showFilePickerError();
     } else {

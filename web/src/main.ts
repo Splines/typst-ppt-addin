@@ -5,8 +5,9 @@ import { initializeDarkMode, setupDarkModeToggle } from "./theme.js";
 import { handleSelectionChange } from "./selection.js";
 import { generateFromFile, initializeDropzone } from "./file.js";
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-Office.actions.associate("generateFromFile", generateFromFile);
+Office.actions.associate("generateFromFile", (event: Office.AddinCommands.Event) => {
+  void generateFromFile(event);
+});
 
 /**
  * Main initialization function for Office Add-in.
