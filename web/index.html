@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>Typst for PowerPoint</title>
     <link href="data:image/x-icon;," rel="icon">
-    <link href="styles.css" rel="stylesheet">
+    <link href="styles/main.css" rel="stylesheet">
+    <link href="styles/file-dropzone.css" rel="stylesheet">
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   </head>
 
@@ -30,7 +31,7 @@
         </label>
       </div>
     </div>
-    <div id="inputWrapper" class="input-wrapper">
+    <div id="inputWrapper">
       <div id="mathDelimiterTop" class="math-delimiter">$</div>
       <textarea id="typstInput" placeholder="Enter Typst code, e.g. a^2 + b^2 = c^2"></textarea>
       <div id="mathDelimiterBottom" class="math-delimiter">$</div>
@@ -50,12 +51,6 @@
     <button id="bulkUpdateBtn" style="display: none;">Update font size</button>
     <div id="status" class="status"></div>
 
-    <div class="footer">
-      Selecting a Typst image on a slide will automatically load its source code here.
-    </div>
-
-    <hr>
-
     <div id="themeToggle">
       <label>
         <input id="darkModeToggle" type="checkbox" alt="Toggle dark mode" checked>
@@ -63,7 +58,23 @@
       </label>
     </div>
 
-    <span id="spaceBelow"></span>
+    <div class="file-dropzone">
+      <div class="dropzone-container">
+        <label id="dropzoneLabel" class="dropzone-label">
+          <div class="dropzone-icon">📁</div>
+          <div class="dropzone-text">Drop a Typst file here</div>
+          <div class="dropzone-subtext">or click to browse</div>
+          <input id="fileInput" type="file" class="dropzone-input" accept=".typ,.txt">
+        </label>
+
+        <div id="fileInfo" class="file-info">
+          <div class="file-icon">📄</div>
+          <div id="fileName"></div>
+        </div>
+
+        <button id="generateFromFileBtn" style="display: none;">Generate from file</button>
+      </div>
+    </div>
 
     <script type="module" defer src="src/main.js"></script>
   </body>

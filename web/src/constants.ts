@@ -36,6 +36,8 @@ export const DOM_IDS = {
   DARK_MODE_TOGGLE: "darkModeToggle",
   DIAGNOSTICS_CONTAINER: "diagnosticsContainer",
   DIAGNOSTICS_CONTENT: "diagnosticsContent",
+  FILE_INPUT: "fileInput",
+  GENERATE_FROM_FILE_BTN: "generateFromFileBtn",
 } as const;
 
 /**
@@ -46,6 +48,7 @@ export const STORAGE_KEYS = {
   FILL_COLOR: "typstFillColor",
   MATH_MODE: "typstMathMode",
   THEME: "typstTheme",
+  LAST_FILE_PATH: "typstLastFilePath",
 } as const;
 
 /**

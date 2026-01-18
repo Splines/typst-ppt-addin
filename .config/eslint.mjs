@@ -110,6 +110,7 @@ export default defineConfig([
                 allowSelectors: ["nesting"],
                 allowProperties: ["user-select", "zoom", "resize"]
             }],
+            "css/no-invalid-properties": ["error", { allowUnknownVariables: true }]
         }
     },
 ]);

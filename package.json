@@ -6,7 +6,8 @@
     "dev": "vite --config .config/vite.config.js",
     "build": "vite build --config .config/vite.config.js",
     "start": "office-addin-debugging start web/manifest.xml desktop",
-    "stop": "office-addin-debugging stop web/manifest.xml"
+    "stop": "office-addin-debugging stop web/manifest.xml",
+    "validate-manifest": "office-addin-manifest validate web/manifest.xml"
   },
   "devDependencies": {
     "@eslint/css": "^0.14.1",

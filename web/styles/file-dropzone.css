@@ -1,0 +1,105 @@
+.file-dropzone {
+    background: var(--bg-primary);
+    padding: 12px 0;
+}
+
+.dropzone-container {
+    position: relative;
+}
+
+.dropzone-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    padding: 16px;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    &:hover {
+        border-color: var(--button-bg);
+        background: var(--bg-tertiary);
+    }
+
+    &.drag-over {
+        border-color: var(--button-bg);
+        background: var(--bg-tertiary);
+        border-style: solid;
+        transform: scale(1.02);
+    }
+}
+
+.dropzone-icon {
+    font-size: 1.8em;
+    margin-bottom: 6px;
+    opacity: 0.6;
+}
+
+.dropzone-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.dropzone-subtext {
+    font-size: 11px;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+.dropzone-input {
+    display: none;
+}
+
+.dropzone-status {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+
+    &.show {
+        display: block;
+    }
+
+    &.error {
+        color: var(--error-color);
+        font-weight: bold;
+    }
+}
+
+.file-info {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+
+    &.show {
+        display: flex;
+    }
+}
+
+.file-icon {
+    font-size: 1.5em;
+    opacity: 0.7;
+}
+
+#fileName {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#generateFromFileBtn {
+    margin-top: 12px;
+}
