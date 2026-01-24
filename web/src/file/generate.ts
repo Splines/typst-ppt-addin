@@ -52,9 +52,16 @@ export async function handleGenerateFromFile(): Promise<void> {
     let statusMsg = `Error reading file: ${error}`;
     if (error instanceof DOMException) {
       if (error.name === "NotReadableError") {
-        statusMsg = "Cannot automatically reload a file that has changed on disk."
-          + " Please select the file again. (This is a limitation only on macOS"
-          + " since Safari doesn't support the new File System API yet.)";
+        if (fileHandle) {
+          // Using File System Access API - unexpected error
+          statusMsg = "Cannot read the file. It may be locked, moved, or permissions changed. "
+            + "Please try selecting the file again.";
+        } else {
+          // Fallback mode (file input) - expected limitation
+          statusMsg = "Cannot automatically reload a file that has changed on disk. "
+            + "Please select the file again. (This is a limitation when using the file picker "
+            + "on browsers that don't support the File System Access API, like Safari.)";
+        }
       } else if (error.name === "NotFoundError") {
         statusMsg = "File couldn't be found on disk anymore. Please select your file again.";
       }

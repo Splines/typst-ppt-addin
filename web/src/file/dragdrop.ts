@@ -57,22 +57,23 @@ async function handleDrop(event: DragEvent): Promise<void> {
 
   if (!fileItem) return;
 
+  let handle: FileSystemFileHandle | undefined;
   try {
-    // Try to get FileSystemFileHandle (if supported)
     if ("getAsFileSystemHandle" in fileItem) {
-      const handle = await fileItem.getAsFileSystemHandle();
-      if (handle.kind === "file") {
-        const file = await handle.getFile();
-        processFile(file, handle);
-        return;
+      const fileSystemHandle = await fileItem.getAsFileSystemHandle();
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (fileSystemHandle && fileSystemHandle.kind === "file") {
+        handle = fileSystemHandle;
       }
     }
-  } catch {
-    // FileSystemFileHandle not supported, fallback to regular File object
-    const file = fileItem.getAsFile();
-    if (file) {
-      processFile(file);
-    }
+  } catch (error) {
+    // FileSystemFileHandle not supported or permission denied
+    console.log("Could not get FileSystemFileHandle, using File object only:", error);
+  }
+
+  const file = fileItem.getAsFile();
+  if (file) {
+    processFile(file, handle);
   }
 }
 
