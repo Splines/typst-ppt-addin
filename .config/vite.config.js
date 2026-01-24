@@ -3,6 +3,7 @@ import fs from "fs";
 
 const input = {
   main: "web/index.html",
+  privacy: "web/privacy.html",
   powerpoint: "web/powerpoint.html",
 };
 
