@@ -6,15 +6,15 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
   xsi:type="TaskPaneApp">
   
-  <Id>e6fe8aba-4a8b-4867-9ab5-7bc4e7684810</Id>
+  <Id>07cdde7e-8401-40b3-82cc-b1e7cf85e7eb</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Typst User</ProviderName>
+  <ProviderName>Splines</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Typst for PowerPoint" />
   <Description DefaultValue="Create and edit Typst equations in PowerPoint." />
   <IconUrl DefaultValue="https://localhost:3155/assets/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3155/assets/icon-80.png" />
-  <SupportUrl DefaultValue="https://www.typst.app" />
+  <SupportUrl DefaultValue="https://github.com/Splines/typst-powerpoint/issues" />
   
   <Hosts>
     <Host Name="Presentation" />
@@ -106,7 +106,7 @@
         <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3155/assets/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/Splines/typst-powerpoint" />
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3155/index.html" />
       </bt:Urls>
       <bt:ShortStrings>
@@ -117,7 +117,7 @@
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="This add-in allows you to create and edit Typst equations." />
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click into the Typst editor task pane!" />
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the Typst for PowerPoint Add-in" />
         <bt:String id="GenerateFromFileButton.Tooltip" DefaultValue="Generate Typst formula from an external file" />
       </bt:LongStrings>
     </Resources>
