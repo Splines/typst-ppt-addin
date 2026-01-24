@@ -27,7 +27,7 @@
   </Requirements>
   
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://localhost:3155/index.html" />
+    <SourceLocation DefaultValue="https://localhost:3155/powerpoint.html" />
   </DefaultSettings>
   
   <Permissions>ReadWriteDocument</Permissions>

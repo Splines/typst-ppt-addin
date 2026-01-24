@@ -4,80 +4,44 @@
   <head>
     <meta charset="UTF-8">
     <title>Typst for PowerPoint</title>
-    <link href="data:image/x-icon;," rel="icon">
-    <link href="styles/main.css" rel="stylesheet">
-    <link href="styles/file-dropzone.css" rel="stylesheet">
-    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+    </style>
   </head>
 
   <body>
-    <div class="controls">
-      <div class="control-group">
-        <label for="fontSize" title="Font size in points (pt)">Size</label>
-        <input id="fontSize" type="number" min="1" step="1.0" value="28">
-      </div>
-      <div class="control-group checkbox-group fill-color-group">
-        <label title="Shape fill color">
-          <input id="fillColorEnabled" type="checkbox" checked>
-          <span>Fill</span>
-        </label>
-        <!-- eslint-disable-next-line @html-eslint/use-baseline -->
-        <input id="fillColor" type="color" value="#000000">
-      </div>
-      <div class="control-group checkbox-group">
-        <label title="Automatically wrap your input in display math delimiters ($)">
-          <input id="mathModeEnabled" type="checkbox" checked>
-          <span>Only Math</span>
-        </label>
-      </div>
-    </div>
-    <div id="inputWrapper">
-      <div id="mathDelimiterTop" class="math-delimiter">$</div>
-      <textarea id="typstInput" placeholder="Enter Typst code, e.g. a^2 + b^2 = c^2"></textarea>
-      <div id="mathDelimiterBottom" class="math-delimiter">$</div>
-    </div>
-
-    <div id="previewContainer">
-      <span id="previewLabel">Preview</span>
-      <div id="previewContent"></div>
-    </div>
-
-    <div id="diagnosticsContainer" style="display: none;">
-      <span id="diagnosticsLabel">Diagnostics</span>
-      <div id="diagnosticsContent"></div>
-    </div>
-
-    <button id="insertBtn" disabled></button>
-    <button id="bulkUpdateBtn" style="display: none;">Update font size</button>
-    <div id="status" class="status"></div>
-
-    <div id="themeToggle">
-      <label>
-        <input id="darkModeToggle" type="checkbox" alt="Toggle dark mode" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="file-dropzone">
-      <div class="dropzone-container">
-        <label id="dropzoneLabel" class="dropzone-label"
-          alt="Select a Typst file to generate an equation from it">
-          <div class="dropzone-icon">📁</div>
-          <div class="dropzone-text">Drop a Typst file here</div>
-          <div class="dropzone-subtext">or click to browse</div>
-          <input id="fileInput" type="file" class="dropzone-input" accept=".typ,.txt">
-        </label>
-
-        <div id="fileInfo" class="file-info">
-          <div class="file-icon">📄</div>
-          <div id="fileName"></div>
-        </div>
-
-        <button id="generateFromFileBtn" style="display: none;"></button>
-      </div>
-    </div>
-
-    <script type="module" defer src="src/main.js"></script>
+    <h1>Typst for PowerPoint</h1>
+    <p>
+      Use Typst to easily insert beautiful equations into your
+      PowerPoint presentations. See the project on
+      <a href="https://github.com/splines/typst-powerpoint">GitHub</a>.
+      Right not it is in early preview, the Add-in is not yet available on the
+      PowerPoint Office Add-in Marketplace.
+    </p>
+    <p>
+      The PowerPoint Add-in will connect to this static page in order to display
+      the Add-in UI. All data stays local to your machine. In fact, there is no
+      backend at all as this static site is hosted on GitHub Pages.
+    </p>
   </body>
 
 </html>

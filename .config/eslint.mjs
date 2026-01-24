@@ -88,7 +88,7 @@ export default defineConfig([
                 closeStyle: "newline",
                 ifAttrsMoreThan: 5,
             }],
-            "@html-eslint/element-newline": "error",
+            "@html-eslint/element-newline": ["error", { "inline": ["$inline"] }],
             "@html-eslint/id-naming-convention": ["error", "camelCase"],
             "@html-eslint/indent": ["error", 2],
             "@html-eslint/sort-attrs": "error",
