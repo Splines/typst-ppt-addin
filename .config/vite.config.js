@@ -4,7 +4,7 @@ import fs from "fs";
 export default defineConfig({
   root: "web",
   build: {
-    outDir: "../dist/web",
+    outDir: "../build/",
     emptyOutDir: true,
   },
   server: {
