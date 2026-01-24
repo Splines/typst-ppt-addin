@@ -31,7 +31,8 @@ export async function handleGenerateFromFile(): Promise<void> {
       content = await selectedFile.text();
       fileName = selectedFile.name;
     } else {
-      return; // Should never happen due to check above
+      console.error("No file or handle available, should never happen");
+      return;
     }
 
     setTypstCode(content);
@@ -48,22 +49,17 @@ export async function handleGenerateFromFile(): Promise<void> {
       setMathModeEnabled(previousMathMode);
     }
   } catch (error) {
+    console.error(error);
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     let statusMsg = `Error reading file: ${error}`;
+
     if (error instanceof DOMException) {
-      if (error.name === "NotReadableError") {
-        if (fileHandle) {
-          // Using File System Access API - unexpected error
-          statusMsg = "Cannot read the file. It may be locked, moved, or permissions changed. "
-            + "Please try selecting the file again.";
-        } else {
-          // Fallback mode (file input) - expected limitation
-          statusMsg = "Cannot automatically reload a file that has changed on disk. "
-            + "Please select the file again. (This is a limitation when using the file picker "
-            + "on browsers that don't support the File System Access API, like Safari.)";
-        }
-      } else if (error.name === "NotFoundError") {
+      if (error.name === "NotFoundError") {
         statusMsg = "File couldn't be found on disk anymore. Please select your file again.";
+      } else if (error.name === "NotReadableError") {
+        statusMsg = "Cannot automatically reload a file that has changed on disk. "
+          + "Please select the file again. (This is a limitation when using the file picker "
+          + "on browsers that don't support the File System Access API, like Safari.)";
       }
     }
     setStatus(statusMsg, true);
