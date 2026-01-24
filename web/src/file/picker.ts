@@ -73,5 +73,7 @@ export function handleFileInputChange(event: Event): void {
 
   if (files && files.length > 0) {
     processFile(files[0]);
+    // without this, selecting the same file again wouldn't trigger a change event
+    input.value = "";
   }
 }
