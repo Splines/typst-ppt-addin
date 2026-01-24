@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import fs from "fs";
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ command }) => ({
   root: "web",
   build: {
     outDir: "../build/",
@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: 3155,
-    ...(mode !== "production" && {
+    ...(command === "serve" && {
       https: {
         key: fs.readFileSync("web/certs/localhost.key"),
         cert: fs.readFileSync("web/certs/localhost.crt"),
