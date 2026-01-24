@@ -2,9 +2,8 @@
  * UI update functions for file handling.
  */
 
-import { DOM_IDS, STORAGE_KEYS } from "../constants.js";
+import { DOM_IDS } from "../constants.js";
 import { getButtonElement, getHTMLElement } from "../utils/dom.js";
-import { storeValue } from "../utils/storage.js";
 import { setStatus } from "../ui.js";
 
 /**
@@ -22,8 +21,6 @@ export function updateFileUI(file: File): void {
 
   const dropzoneLabel = getHTMLElement("dropzoneLabel");
   dropzoneLabel.style.borderColor = "";
-
-  storeValue(STORAGE_KEYS.LAST_FILE_PATH as string, file.name);
 }
 
 /**
