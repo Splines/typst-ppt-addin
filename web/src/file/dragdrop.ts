@@ -5,6 +5,7 @@
 import "./types.js";
 import { getHTMLElement } from "../utils/dom.js";
 import { processFile, handleFileInputChange, pickFile } from "./picker.js";
+import { DOM_IDS } from "../constants.js";
 
 /**
  * Handles drag over event.
@@ -12,7 +13,7 @@ import { processFile, handleFileInputChange, pickFile } from "./picker.js";
 function handleDragOver(event: DragEvent): void {
   event.preventDefault();
 
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
+  const dropzoneLabel = getHTMLElement(DOM_IDS.DROPZONE_LABEL);
   if (!event.dataTransfer?.items) return;
 
   const fileItems = Array.from(event.dataTransfer.items).filter(item => item.kind === "file");
@@ -31,7 +32,7 @@ function handleDragOver(event: DragEvent): void {
  * Handles drag leave event.
  */
 function handleDragLeave(event: DragEvent): void {
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
+  const dropzoneLabel = getHTMLElement(DOM_IDS.DROPZONE_LABEL);
   const relatedTarget = event.relatedTarget as Node;
 
   // Only remove drag-over if we're actually leaving the dropzone
@@ -46,7 +47,7 @@ function handleDragLeave(event: DragEvent): void {
 async function handleDrop(event: DragEvent): Promise<void> {
   event.preventDefault();
 
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
+  const dropzoneLabel = getHTMLElement(DOM_IDS.DROPZONE_LABEL);
   dropzoneLabel.classList.remove("drag-over");
 
   if (!event.dataTransfer?.items) return;
@@ -94,7 +95,7 @@ async function handleDrop(event: DragEvent): Promise<void> {
  * Initializes the dropzone event listeners.
  */
 export function initializeDropzone(): void {
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
+  const dropzoneLabel = getHTMLElement(DOM_IDS.DROPZONE_LABEL);
   const fileInput = getHTMLElement("fileInput") as HTMLInputElement;
   // Intercept label clicks to use File System Access API when supported
   dropzoneLabel.addEventListener("click", (event) => {

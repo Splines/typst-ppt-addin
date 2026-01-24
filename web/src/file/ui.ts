@@ -13,13 +13,13 @@ export function updateFileUI(file: File): void {
   const generateBtn = getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN);
   generateBtn.style.display = "block";
 
-  const fileInfo = getHTMLElement("fileInfo");
+  const fileInfo = getHTMLElement(DOM_IDS.FILE_INFO);
   fileInfo.classList.add("show");
 
-  const fileName = getHTMLElement("fileName");
+  const fileName = getHTMLElement(DOM_IDS.FILE_NAME);
   fileName.textContent = file.name;
 
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
+  const dropzoneLabel = getHTMLElement(DOM_IDS.DROPZONE_LABEL);
   dropzoneLabel.style.borderColor = "";
 }
 
@@ -27,7 +27,7 @@ export function updateFileUI(file: File): void {
  * Shows the file picker error state when no file is selected.
  */
 export function showFilePickerError(): void {
-  const dropzoneLabel = getHTMLElement("dropzoneLabel");
+  const dropzoneLabel = getHTMLElement(DOM_IDS.DROPZONE_LABEL);
   dropzoneLabel.style.borderColor = "var(--error-color)";
   setStatus("Please select a file first", true);
 }
@@ -37,6 +37,6 @@ export function showFilePickerError(): void {
  */
 export function hideFileUI(): void {
   getButtonElement(DOM_IDS.GENERATE_FROM_FILE_BTN).style.display = "none";
-  const fileInfo = getHTMLElement("fileInfo");
+  const fileInfo = getHTMLElement(DOM_IDS.FILE_INFO);
   fileInfo.classList.remove("show");
 }

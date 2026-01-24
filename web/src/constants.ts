@@ -38,6 +38,9 @@ export const DOM_IDS = {
   DIAGNOSTICS_CONTENT: "diagnosticsContent",
   FILE_INPUT: "fileInput",
   GENERATE_FROM_FILE_BTN: "generateFromFileBtn",
+  FILE_INFO: "fileInfo",
+  FILE_NAME: "fileName",
+  DROPZONE_LABEL: "dropzoneLabel",
 } as const;
 
 /**
