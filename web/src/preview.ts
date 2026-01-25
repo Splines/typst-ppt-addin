@@ -134,7 +134,6 @@ export async function updatePreview() {
  * Displays diagnostics in the UI.
  */
 function displayDiagnostics(diagnostics: (string | DiagnosticMessage)[], content: HTMLElement, mathMode: boolean) {
-  console.log("Displaying diagnostics:", diagnostics);
   content.innerHTML = "";
 
   diagnostics.forEach((diag, index) => {

@@ -75,8 +75,7 @@ async function handleDrop(event: DragEvent): Promise<void> {
       }
     }
   } catch (error) {
-    // FileSystemFileHandle not supported or permission denied
-    console.log("Could not get FileSystemFileHandle, using File object only:", error);
+    console.error("Could not get FileSystemFileHandle, using File object only:", error);
   }
 
   if (!file) {
