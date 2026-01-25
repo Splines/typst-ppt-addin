@@ -1,7 +1,7 @@
 > [!Important]
 > This is currently an early preview while the first PoC is being improved on, to then ship the PowerPoint Add-in to the Marketplace.<br>Expect a first release mid/end-February.
 
-# 🚀 typst-powerpoint
+# 🚀 PPTypst | Typst for PowerPoint
 
 Typst PowerPoint brings the power of [Typst](https://typst.app) to PowerPoint. Easily insert formulas with live preview, update them, and even generate from a file.
 
@@ -15,4 +15,4 @@ See the [Dev Guide](DEV.md).
 
 ### 🎈 About
 
-The first proof-of-concept came from Johannes Berger [here](https://github.com/johannesber/typst-ppt-addin) in January 2026. I forked the repo and have since been building on it, replacing the custom engine by [`typst.ts`](https://github.com/Myriad-Dreamin/typst.ts), migrating TypeScript, improving on code quality, as well as polishing and adding a lot more functionality. If you have any feature requests or want to report a bug, head over to the [issues](https://github.com/Splines/typst-powerpoint/issues).
+The first proof-of-concept came from Johannes Berger [here](https://github.com/johannesber/typst-ppt-addin) in January 2026. I forked the repo and have since been building on it, replacing the custom engine by [`typst.ts`](https://github.com/Myriad-Dreamin/typst.ts), migrating TypeScript, improving on code quality, as well as polishing and adding a lot more functionality. If you have any feature requests or want to report a bug, head over to the [issues](https://github.com/Splines/pptypst/issues).
