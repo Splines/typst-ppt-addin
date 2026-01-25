@@ -66,7 +66,7 @@ Then set `COMPILER_URL=http://localhost:4000/compile` before `npm run dev` so th
 ## Usage
 - Enter Typst code (e.g. `$a^2 + b^2 = c^2$`) and click **Insert / Update** to place an SVG on the current slide.
 - Select an existing Typst-generated shape to automatically reload its source into the textbox, edit, and re-run Insert / Update to replace it in place (position preserved).
-- Shapes are tagged with `altTextDescription` starting `TYPST:` plus the encoded source; math font is served from `web/assets/math-font.ttf` on the same origin.
+- Shapes are tagged with `altTextDescription` starting `TYPST:` plus the encoded source; math font is served from `web/math-font.ttf` on the same origin.
 - Remote compiler: if `COMPILER_URL` is set, the add-in POSTs `{ source, format: "svg" }` (with optional bearer auth) to that endpoint and uses the returned `svg`. Local WASM is used only when `COMPILER_URL` is not configured.
 
 ## NPM scripts
@@ -78,4 +78,4 @@ Then set `COMPILER_URL=http://localhost:4000/compile` before `npm run dev` so th
 ## Tips
 - If insertion silently fails, check the taskpane console for "Insert failed" or "WASM Load Error."
 - Ensure the built `pkg/typst_ppt_engine.js` and `.wasm` file stay in `web/pkg/`.
-- Keep the math font available at `/assets/math-font.ttf`.
+- Keep the math font available at `/math-font.ttf`.

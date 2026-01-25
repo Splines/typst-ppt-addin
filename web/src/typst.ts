@@ -38,7 +38,7 @@ async function initCompiler() {
     beforeBuild: [
       disableDefaultFontAssets(),
       loadFonts([
-        "assets/math-font.ttf",
+        "/math-font.ttf",
       ]),
     ],
   });
