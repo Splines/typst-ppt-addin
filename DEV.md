@@ -13,7 +13,7 @@ In order to test your changes to the Add-in locally, you have to sideload it int
 This is also described in the [Sideload an Office Add-in for testing](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/test-debug-office-add-ins#sideload-an-office-add-in-for-testing) docs.
 
 1. PowerPoint → File → Options → Trust Center → Trust Center Settings → Trusted Add-in Catalogs.
-2. Add a Shared Folder catalog pointing to this repo (where `manifest.xml` lives) and check "Show in Menu."<br>
+2. Add a Shared Folder catalog pointing to the folder where `web/manifest.xml` lives and check "Show in Menu."<br>
 <sub>This step requires the folder to be shared as a network folder, so the Catalog URL should be something like `\\your-device\path\to\repo\web`. On Windows, you can share a folder by right-clicking it in File Explorer, selecting "Properties", going to the "Sharing" tab, and clicking "Advanced Sharing..." and "Share this folder". Follow the prompts to share the folder on your network. If you're using WSL, you're lucky since URLs that start with `\\wsl.localhost\` seem to work fine, even without having to configure any network sharing.</sub>
 3. Restart PowerPoint → Home-ribbon → Add-ins → More Add-ins → Shared Folder → pick the Typst Add-in.
 
