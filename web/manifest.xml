@@ -12,8 +12,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Typst for PowerPoint" />
   <Description DefaultValue="Create and edit Typst equations in PowerPoint." />
-  <IconUrl DefaultValue="https://localhost:3155/typst-powerpoint/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:3155/typst-powerpoint/icon-80.png" />
+  <IconUrl DefaultValue="https://localhost:3155/typst-powerpoint/icon-96.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3155/typst-powerpoint/icon-96.png" />
   <SupportUrl DefaultValue="https://github.com/Splines/typst-powerpoint/issues" />
   
   <Hosts>
@@ -53,9 +53,11 @@
 
                 <Label resid="Group.Label" />
                 <Icon>
-                  <bt:Image size="16" resid="Icon.16x16" />
-                  <bt:Image size="32" resid="Icon.32x32" />
-                  <bt:Image size="80" resid="Icon.80x80" />
+                  <bt:Image size="16" resid="Icon.16" />
+                  <bt:Image size="32" resid="Icon.32" />
+                  <bt:Image size="64" resid="Icon.64" />
+                  <bt:Image size="80" resid="Icon.80" />
+                  <bt:Image size="96" resid="Icon.96" />
                 </Icon>
 
                 <Control xsi:type="Button" id="BtnOpenPane">
@@ -65,9 +67,11 @@
                     <Description resid="TaskpaneButton.Tooltip" />
                   </Supertip>
                   <Icon>
-                     <bt:Image size="16" resid="Icon.16x16" />
-                     <bt:Image size="32" resid="Icon.32x32" />
-                     <bt:Image size="80" resid="Icon.80x80" />
+                     <bt:Image size="16" resid="Icon.16" />
+                     <bt:Image size="32" resid="Icon.32" />
+                     <bt:Image size="64" resid="Icon.64" />
+                     <bt:Image size="80" resid="Icon.80" />
+                     <bt:Image size="96" resid="Icon.96" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>TypstPane</TaskpaneId>
@@ -82,9 +86,11 @@
                     <Description resid="GenerateFromFileButton.Tooltip" />
                   </Supertip>
                   <Icon>
-                     <bt:Image size="16" resid="Icon.16x16" />
-                     <bt:Image size="32" resid="Icon.32x32" />
-                     <bt:Image size="80" resid="Icon.80x80" />
+                     <bt:Image size="16" resid="Icon.16" />
+                     <bt:Image size="32" resid="Icon.32" />
+                     <bt:Image size="64" resid="Icon.64" />
+                     <bt:Image size="80" resid="Icon.80" />
+                     <bt:Image size="96" resid="Icon.96" />
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>generateFromFile</FunctionName>
@@ -101,20 +107,25 @@
 
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3155/typst-powerpoint/icon-16.png" />
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3155/typst-powerpoint/icon-32.png" />
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3155/typst-powerpoint/icon-80.png" />
+        <bt:Image id="Icon.16" DefaultValue="https://localhost:3155/typst-powerpoint/icon-16.png" />
+        <bt:Image id="Icon.32" DefaultValue="https://localhost:3155/typst-powerpoint/icon-32.png" />
+        <bt:Image id="Icon.64" DefaultValue="https://localhost:3155/typst-powerpoint/icon-64.png" />
+        <bt:Image id="Icon.80" DefaultValue="https://localhost:3155/typst-powerpoint/icon-80.png" />
+        <bt:Image id="Icon.96" DefaultValue="https://localhost:3155/typst-powerpoint/icon-96.png" />
       </bt:Images>
+
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/Splines/typst-powerpoint" />
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3155/typst-powerpoint/powerpoint.html" />
       </bt:Urls>
+
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with Typst!" />
         <bt:String id="Group.Label" DefaultValue="Typst" />
         <bt:String id="TaskpaneButton.Label" DefaultValue="Typst Editor" />
         <bt:String id="GenerateFromFileButton.Label" DefaultValue="Generate from File" />
       </bt:ShortStrings>
+
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="This add-in allows you to create and edit Typst equations." />
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the Typst for PowerPoint Add-in" />
