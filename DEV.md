@@ -26,7 +26,7 @@ npm install
 npm run dev
 ```
 
-Note that Office Add-ins require the secure-context `https` (not just `http`), even for local development. So you have to add a `localhost.key` and `localhost.crt` file to the `web/certs/` folder (see also the `vite.config.js`). To create and trust a `localhost` certificate on your machine, you may want to use `mkcert`:
+Note that Office Add-ins require the secure-context `https` (not just `http`), even for local development. So you have to add a `localhost.key` and `localhost.crt` file to the `web/certs/` folder (see also `.config/vite.config.js`). To create and trust a `localhost` certificate on your machine, you may want to use `mkcert`:
 
 ```sh
 mkcert -install
