@@ -8,9 +8,13 @@
 import type * as typstWeb from "@myriaddreamin/typst.ts";
 import { createTypstCompiler, createTypstRenderer } from "@myriaddreamin/typst.ts";
 import { disableDefaultFontAssets, loadFonts } from "@myriaddreamin/typst.ts/dist/esm/options.init.mjs";
+
+// @ts-expect-error ?url import
 import mathFontUrl from "/math-font.ttf?url";
 
+// @ts-expect-error WASM module import
 import typstCompilerWasm from "@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url";
+// @ts-expect-error WASM module import
 import typstRendererWasm from "@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm?url";
 
 let compiler: typstWeb.TypstCompiler;
@@ -32,9 +36,11 @@ export async function initTypst() {
 async function initCompiler() {
   compiler = createTypstCompiler();
   await compiler.init({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     getModule: () => typstCompilerWasm,
     beforeBuild: [
       disableDefaultFontAssets(),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       loadFonts([mathFontUrl]),
     ],
   });
@@ -49,6 +55,7 @@ async function initCompiler() {
 async function initRenderer() {
   renderer = createTypstRenderer();
   await renderer.init({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     getModule: () => typstRendererWasm,
   });
   console.log("Typst renderer initialized");
