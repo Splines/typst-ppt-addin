@@ -86,11 +86,11 @@
                     <Description resid="GenerateFromFileButton.Tooltip" />
                   </Supertip>
                   <Icon>
-                     <bt:Image size="16" resid="Icon.16" />
-                     <bt:Image size="32" resid="Icon.32" />
-                     <bt:Image size="64" resid="Icon.64" />
-                     <bt:Image size="80" resid="Icon.80" />
-                     <bt:Image size="96" resid="Icon.96" />
+                     <bt:Image size="16" resid="File.16" />
+                     <bt:Image size="32" resid="File.32" />
+                     <bt:Image size="64" resid="File.64" />
+                     <bt:Image size="80" resid="File.80" />
+                     <bt:Image size="96" resid="File.96" />
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>generateFromFile</FunctionName>
@@ -112,6 +112,12 @@
         <bt:Image id="Icon.64" DefaultValue="https://localhost:3155/pptypst/icon-64.png" />
         <bt:Image id="Icon.80" DefaultValue="https://localhost:3155/pptypst/icon-80.png" />
         <bt:Image id="Icon.96" DefaultValue="https://localhost:3155/pptypst/icon-96.png" />
+
+        <bt:Image id="File.16" DefaultValue="https://localhost:3155/pptypst/file-16.png" />
+        <bt:Image id="File.32" DefaultValue="https://localhost:3155/pptypst/file-32.png" />
+        <bt:Image id="File.64" DefaultValue="https://localhost:3155/pptypst/file-64.png" />
+        <bt:Image id="File.80" DefaultValue="https://localhost:3155/pptypst/file-80.png" />
+        <bt:Image id="File.96" DefaultValue="https://localhost:3155/pptypst/file-96.png" />
       </bt:Images>
 
       <bt:Urls>
