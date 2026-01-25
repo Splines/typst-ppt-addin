@@ -107,7 +107,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/Splines/typst-powerpoint" />
-        <bt:Url id="Taskpane.Url" DefaultValue="https://splines.github.io/typst-powerpoint/index.html" />
+        <bt:Url id="Taskpane.Url" DefaultValue="https://splines.github.io/typst-powerpoint/powerpoint.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with Typst!" />
