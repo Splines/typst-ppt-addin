@@ -3,3 +3,4 @@ web/certs/*
 !web/certs/.gitkeep 
 build/
 tmp/
+manifest.prod.xml

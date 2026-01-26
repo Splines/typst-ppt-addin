@@ -12,8 +12,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="PPTypst" />
   <Description DefaultValue="Create and edit Typst equations in PowerPoint." />
-  <IconUrl DefaultValue="https://localhost:3155/pptypst/icon-96.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:3155/pptypst/icon-96.png" />
+  <IconUrl DefaultValue="https://localhost:3155/pptypst/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3155/pptypst/icon-64.png" />
   <SupportUrl DefaultValue="https://github.com/Splines/pptypst/issues" />
   
   <Hosts>
