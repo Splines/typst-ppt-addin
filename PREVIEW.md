@@ -20,7 +20,7 @@ The installation will get a lot easier once the Add-in is available in the Marke
 
 ## Remove
 
-If you want to get rid of the Add-in later on, manually delete the Office cache as described [in the docs]([here](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/clear-cache#manually-clear-the-cache-in-excel-word-and-powerpoint)). Essentially, you just have to delete the entire content of this folder (on Windows):
+If you want to get rid of the Add-in later on, manually delete the Office cache as described [in the docs](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/clear-cache#manually-clear-the-cache-in-excel-word-and-powerpoint). Essentially, you just have to delete the entire content of this folder (on Windows):
 
 ```sh
 %LOCALAPPDATA%\Microsoft\Office\16.0\Wef\

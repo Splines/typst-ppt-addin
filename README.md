@@ -19,7 +19,7 @@
 > [!tip]
 > If you want to try out the Add-in already, see the [Early Preview guide](./PREVIEW.md).
 
-Easily insert <a href="https://typst.app">Typst</a> equations with live preview, update them, and even generate from a file.
+Easily insert [Typst](https://typst.app) equations with live preview, update them, and even generate from a file.
 
 ![pptypst-preview](https://github.com/user-attachments/assets/be273628-94fe-4117-b0dd-4d0e87f47d52)
 
@@ -34,3 +34,7 @@ See the [Dev Guide](DEV.md).
 ### 🎈 About
 
 The first proof-of-concept came from Johannes Berger [here](https://github.com/johannesber/typst-ppt-addin) in January 2026. I forked the repo and have since been building on it, replacing the custom engine by [`typst.ts`](https://github.com/Myriad-Dreamin/typst.ts), migrating TypeScript, improving on code quality, as well as polishing and adding a lot more functionality. If you have any feature requests or want to report a bug, head over to the [issues](https://github.com/Splines/pptypst/issues).
+
+### License
+
+This project is licensed under the very permissive MIT-license. See the [License file](./LICENSE). However, notice that the branding (including the logo and the name of this project) are exempt from the license.
