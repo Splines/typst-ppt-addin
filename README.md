@@ -14,9 +14,14 @@
 </div>
 
 > [!Important]
-> This is currently an early preview while the first PoC is being improved on, to then ship the PowerPoint Add-in to the Marketplace. Expect a first release mid/end-February.
+> The Add-in is ready to be shipped to the PowerPoint Add-in Marketplace. I'm currently trying to figure out how to do so without a business account. Then, review process will take 4-6 weeks, so expect a first release mid-March.
 
-PPTypst brings the power of [Typst](https://typst.app) to PowerPoint. Easily insert formulas with live preview, update them, and even generate from a file.
+> [!tip]
+> If you want to try out the Add-in already, see the [Early Preview guide](./PREVIEW.md).
+
+Easily insert <a href="https://typst.app">Typst</a> equations with live preview, update them, and even generate from a file.
+
+![pptypst-preview](https://github.com/user-attachments/assets/be273628-94fe-4117-b0dd-4d0e87f47d52)
 
 <https://github.com/user-attachments/assets/3cb307af-4c02-4665-8f2c-34c23c6f68fc>
 
