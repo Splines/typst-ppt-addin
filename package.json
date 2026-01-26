@@ -7,7 +7,8 @@
     "build": "vite build --config .config/vite.config.js",
     "start": "office-addin-debugging start web/manifest.xml desktop",
     "stop": "office-addin-debugging stop web/manifest.xml",
-    "validate-manifest": "office-addin-manifest validate web/manifest.xml"
+    "validate-manifest": "office-addin-manifest validate web/manifest.xml",
+    "generate-prod-manifest": "sed 's|https://localhost:3155/pptypst/|https://splines.github.io/pptypst/|g' manifest.xml > manifest.prod.xml"
   },
   "devDependencies": {
     "@eslint/css": "^0.14.1",
