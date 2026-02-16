@@ -14,10 +14,7 @@
 </div>
 
 > [!Important]
-> The Add-in is ready to be shipped to the PowerPoint Add-in Marketplace. I'm currently trying to figure out how to do so without a business account. Then, review process will take 4-6 weeks, so expect a first release mid-March.
-
-> [!tip]
-> If you want to try out the Add-in already, see the [Early Preview guide](./PREVIEW.md).
+> Unfortunately, I cannot publish this Add-in to the PowerPoint Add-in Marketplace due to regulations by Microsoft. See my comment [here](https://github.com/Splines/pptypst/issues/4#issuecomment-3909389633). You can sitll use PPTypst by [manual installation](./PREVIEW.md), but unfortunately it's not as easy as one single click.
 
 Easily insert [Typst](https://typst.app) equations with live preview, update them, and even generate from a file.
 
