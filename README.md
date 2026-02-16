@@ -30,7 +30,7 @@ See the [Dev Guide](DEV.md).
 
 ### 🎈 About
 
-The first proof-of-concept came from Johannes Berger [here](https://github.com/johannesber/typst-ppt-addin) in January 2026. I forked the repo and have since been building on it, replacing the custom engine by [`typst.ts`](https://github.com/Myriad-Dreamin/typst.ts), migrating TypeScript, improving on code quality, as well as polishing and adding a lot more functionality. If you have any feature requests or want to report a bug, head over to the [issues](https://github.com/Splines/pptypst/issues).
+The first proof-of-concept came from Johannes Berger [here](https://github.com/johannesber/typst-ppt-addin) in January 2026. I forked the repo and have since been building on it, replacing the custom engine by the awesome [`typst.ts`](https://github.com/Myriad-Dreamin/typst.ts) by Myriad-Dreamin, migrating to TypeScript, improving on code quality, as well as polishing and adding a lot more functionality. If you have any feature requests or want to report a bug, head over to the [issues](https://github.com/Splines/pptypst/issues).
 
 ### License
 
