@@ -16,7 +16,7 @@
 > [!Important]
 > Unfortunately, I cannot publish this Add-in to the PowerPoint Add-in Marketplace due to regulations by Microsoft. See [my comment](https://github.com/Splines/pptypst/issues/4#issuecomment-3909389633). You can still use PPTypst by [manual installation](./INSTALL.md), but unfortunately it's not as easy as one single click.
 
-Easily insert [Typst](https://typst.app) equations with live preview, update them, and even generate from a file.
+Easily insert Typst equations with live preview, update them, and even generate from a file.
 
 ![pptypst-preview](https://github.com/user-attachments/assets/be273628-94fe-4117-b0dd-4d0e87f47d52)
 
