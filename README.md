@@ -14,7 +14,7 @@
 </div>
 
 > [!Important]
-> Unfortunately, I cannot publish this Add-in to the PowerPoint Add-in Marketplace due to regulations by Microsoft. See my comment [here](https://github.com/Splines/pptypst/issues/4#issuecomment-3909389633). You can sitll use PPTypst by [manual installation](./PREVIEW.md), but unfortunately it's not as easy as one single click.
+> Unfortunately, I cannot publish this Add-in to the PowerPoint Add-in Marketplace due to regulations by Microsoft. See my comment [here](https://github.com/Splines/pptypst/issues/4#issuecomment-3909389633). You can still use PPTypst by [manual installation](./INSTALL.md), but unfortunately it's not as easy as one single click.
 
 Easily insert [Typst](https://typst.app) equations with live preview, update them, and even generate from a file.
 
@@ -24,7 +24,12 @@ Easily insert [Typst](https://typst.app) equations with live preview, update the
 
 <sub>Maybe we can even integrate packages from the [Typst Universe](https://typst.app/universe/) in the future, vote for [this issue](https://github.com/Myriad-Dreamin/typst.ts/issues/825) or provide a PR if you have a solution in mind ;)</sub>
 
-### ✨ How it works & Developing
+### Installation
+
+See [the Install guide](./INSTALL.md).
+
+
+### How it works & Developing
 
 See the [Dev Guide](DEV.md).
 
