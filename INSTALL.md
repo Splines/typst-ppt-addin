@@ -4,7 +4,7 @@ Unfortunately, this Add-in is not yet available in the PowerPoint Add-in Marketp
 
 ## Installation
 
-More detailed instructions are available [in the Office docs](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins).
+The following instructions are for Windows only. For more detailed instructions and other operating systems, see the [the Office docs](https://learn.microsoft.com/en-us/office/dev/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins).
 
 1. **Download** the [`manifest.prod.xml`](https://github.com/user-attachments/files/24866664/manifest.prod.xml) and place it in any folder, e.g. a new folder called `pptypst` in your Downloads.
 2. **Share the folder** where you placed `manifest.prod.xml`.

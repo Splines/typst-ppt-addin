@@ -7,7 +7,7 @@
   <div align="center">
     <h3 align="center">PPTypst</h3>
     <p>
-      <strong>Bring <a href="https://typst.app">Typst</a> to PowerPoint</strong><br>
+      <strong>Bring <a href="https://typst.app">Typst</a> to PowerPoint</strong> | <a href="https://youtu.be/c6sfzu2--iY">YouTube Tutorial</a><br>
       <sub><i>This community project is not affiliated with or endorsed by Typst.</i></sub>
     </p>
   </div>
@@ -28,6 +28,13 @@ Easily insert Typst equations with live preview, update them, and even generate 
 
 See [the Install guide](./INSTALL.md).
 
+## Tutorial
+
+[YouTube: Animate equations in PowerPoint with PPTypst](https://youtu.be/c6sfzu2--iY)
+
+<a href="https://youtu.be/c6sfzu2--iY">
+  <img src="https://github.com/user-attachments/assets/cd883ee6-099d-4cfa-bf15-854eecdcb448" width="400px"/>
+</a>
 
 ### How it works & Developing
 
